@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot;
+package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.command.Command;
@@ -58,7 +58,7 @@ public class Drive extends Subsystem {
   
   public static void stopMoving() {
     RobotMap.driveLeftFront.set(ControlMode.PercentOutput, 0.0);
-    RobotMap.driveRightFront.set(ControlMode.Follower, RobotMap.driveLeftFront.getDeviceID());
+    RobotMap.driveLeftRear.set(ControlMode.Follower, RobotMap.driveLeftFront.getDeviceID());
     RobotMap.driveRightFront.set(ControlMode.PercentOutput, 0.0);
     RobotMap.driveRightRear.set(ControlMode.Follower, RobotMap.driveRightFront.getDeviceID());
   }

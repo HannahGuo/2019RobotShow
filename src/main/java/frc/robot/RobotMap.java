@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -24,9 +25,29 @@ public class RobotMap {
 
     private RobotMap() {
         driveLeftFront.set(ControlMode.PercentOutput, 0.0);
-        driveRightFront.set(ControlMode.Follower, driveLeftFront.getDeviceID());
+        driveLeftFront.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+
+        driveLeftRear.set(ControlMode.Follower, driveLeftFront.getDeviceID());
+
         driveRightFront.set(ControlMode.PercentOutput, 0.0);
+        driveRightFront.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+
         driveRightRear.set(ControlMode.Follower, driveRightFront.getDeviceID());
+    }
+
+    public static void resetSensors() {
+        _gyroSPI.resetRelative();
+        driveLeftFront.setSelectedSensorPosition(0);
+        driveRightFront.setSelectedSensorPosition(0);
+        pdp.clearStickyFaults();
+    }
+
+    public static void getEncoderOutputs() {
+        System.out.println("Encoder outputs: " + driveLeftFront.getSelectedSensorPosition() + " " + driveRightFront.getSelectedSensorPosition());
+    }
+
+    public static void getDriveCurrents(){
+        System.out.println("Drive currents: " + driveLeftFront.getOutputCurrent() + " " + driveRightFront.getOutputCurrent());
     }
 
     public static void checkTalonVersions() {
