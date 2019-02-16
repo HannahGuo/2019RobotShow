@@ -1,18 +1,17 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SPI.Port;
-import edu.wpi.first.wpilibj.Timer;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.BitSet;
 import java.util.TimerTask;
 
-@SuppressWarnings("Duplicates")
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SPI.Port;
+import edu.wpi.first.wpilibj.Timer;
+
 public class ADXRS453Gyro {
-	private static final int DATA_SIZE = 4; //4 bytes = 32 bits
-	private static final byte PARITY_BIT = (byte) 0x01; //parity check on first bit
+	private static final int DATA_SIZE = 4; // 4 bytes = 32 bits
+	private static final byte PARITY_BIT = (byte) 0x01; // parity check on first bit
 	private static final byte FIRST_BYTE_DATA_MASK = (byte) 0x03; //mask to find sensor data bits on first byte
 	private static final byte THIRD_BYTE_DATA_MASK = (byte) 0xFC; //mask to find sensor data bits on third byte
 	private static final byte READ_COMMAND = (byte) 0x20; //0010 0000
@@ -64,7 +63,7 @@ public class ADXRS453Gyro {
 	private void startThread() {
 		System.out.println("Gyro calibrating... Please wait");
 		java.util.Timer executor = new java.util.Timer();
-		executor.schedule(new GyroUpdateTask(this), 0 L, this.period);
+		executor.schedule(new GyroUpdateTask(this), 0L, this.period);
 	}
 
 	/**

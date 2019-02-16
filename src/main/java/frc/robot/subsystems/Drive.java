@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.OI;
+import frc.robot.RobotMap;
 
 public class Drive extends Subsystem {
   private static Drive instance;

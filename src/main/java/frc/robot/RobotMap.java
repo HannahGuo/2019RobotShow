@@ -5,18 +5,26 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.Solenoid;
 
 public class RobotMap {
     public static final TalonSRX driveLeftFront = new TalonSRX(0);
     public static final TalonSRX driveLeftRear = new TalonSRX(1);
     public static final TalonSRX driveRightFront = new TalonSRX(2);
     public static final TalonSRX driveRightRear = new TalonSRX(3);
+    public static final TalonSRX wristControl = new TalonSRX(4);
+    public static final TalonSRX elevatorLeft = new TalonSRX(5);
+    public static final TalonSRX elevatorRight = new TalonSRX(6);
+    public static final TalonSRX clawLeft = new TalonSRX(7);
+    public static final TalonSRX clawRight = new TalonSRX(8);
+
+    public static final Solenoid driveShifter = new Solenoid(0);
 
     private static final PowerDistributionPanel pdp = new PowerDistributionPanel();
 
     public static final ADXRS453Gyro _gyroSPI = new ADXRS453Gyro(); //Counter-clockwise (Left) = negative, clockwise (Right) = positive
 
-    private static int talonVersion = 0x04011;
+    private static int talonVersion = 0x04017;
 
     private static RobotMap instance;
     public static RobotMap getInstance() {

@@ -7,20 +7,22 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
 
 public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   private Drive drive = Drive.getInstance();
   private RobotMap robotMap = RobotMap.getInstance();
   // private Elevator elevator = Elevator.getInstance();
   private OI oi = OI.getInstance();
+  private Compressor c = new Compressor(0);
 
   @Override
   public void robotInit() {
@@ -37,20 +39,23 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
+    Scheduler.getInstance().run();
   }
 
   @Override
   public void disabledInit(){
     drive.stopMoving();
+    robotMap.resetSensors();
   }
 
   @Override
   public void teleopInit(){
-    
+    Scheduler.getInstance().removeAll();
   }
 
   @Override
   public void teleopPeriodic() {
+    Scheduler.getInstance().run();
   }
 
   @Override
