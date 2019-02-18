@@ -19,9 +19,9 @@ public class OI {
         return primary.getRawAxis(2);
     } //RightStickXAxis
 
-    public static double getElevator() {
-        return -secondary.getRawAxis(3);
-    } //RightStickYAxis
+    public static double getSecondaryA1() {
+        return secondary.getRawAxis(1);
+    } //LeftStickYAxis
 
     static boolean getPrimaryAPressed() {
         return primary.getRawButtonPressed(2);

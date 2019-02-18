@@ -23,14 +23,12 @@ public class RobotMap {
     
     public static final TalonSRX wristControl = new TalonSRX(1);
 
-    public static final Solenoid leftDriveShifter = new Solenoid(0);
-    public static final Solenoid rightDriveShifter = new Solenoid(1);
-    public static final Solenoid frogLeftShifter = new Solenoid(2);
-    public static final Solenoid frogRightShifter = new Solenoid(3);
+    public static final Solenoid driveShifter = new Solenoid(0);
+    public static final Solenoid frogShifter = new Solenoid(1);
 
     private static final PowerDistributionPanel pdp = new PowerDistributionPanel();
 
-    public static final ADXRS453Gyro _gyroSPI = new ADXRS453Gyro(); //Counter-clockwise (Left) = negative, clockwise (Right) = positive
+    public static final ADXRS453Gyro gyroSPI = new ADXRS453Gyro(); //Counter-clockwise (Left) = negative, clockwise (Right) = positive
 
     private static int talonVersion = 0x04017;
 
@@ -46,7 +44,7 @@ public class RobotMap {
         driveLeftTop.setNeutralMode(NeutralMode.Brake);
         driveLeftTop.configVoltageCompSaturation(12.0, 10);
         driveLeftTop.enableVoltageCompensation(true);
-        driveLeftTop.configPeakCurrentLimit(40, 10);
+        driveLeftTop.configPeakCurrentLimit(0, 10);
         driveLeftTop.configPeakCurrentDuration(0);
         driveLeftTop.configContinuousCurrentLimit(35, 10);
         driveLeftTop.enableCurrentLimit(true);
@@ -55,7 +53,7 @@ public class RobotMap {
         driveLeftBot.setNeutralMode(NeutralMode.Brake);
         driveLeftBot.configVoltageCompSaturation(12.0, 10);
         driveLeftBot.enableVoltageCompensation(true);
-        driveLeftBot.configPeakCurrentLimit(40, 10);
+        driveLeftBot.configPeakCurrentLimit(0, 10);
         driveLeftBot.configPeakCurrentDuration(0);
         driveLeftBot.configContinuousCurrentLimit(35, 10);
         driveLeftBot.enableCurrentLimit(true);
@@ -71,7 +69,7 @@ public class RobotMap {
         driveRightBot.setNeutralMode(NeutralMode.Brake);
         driveRightBot.configVoltageCompSaturation(12.0, 10);
         driveRightBot.enableVoltageCompensation(true);
-        driveRightBot.configPeakCurrentLimit(40, 10);
+        driveRightBot.configPeakCurrentLimit(0, 10);
         driveRightBot.configPeakCurrentDuration(0);
         driveRightBot.configContinuousCurrentLimit(35, 10);
         driveRightBot.enableCurrentLimit(true);
@@ -92,7 +90,7 @@ public class RobotMap {
     }
 
     public static void resetSensors() {
-        _gyroSPI.resetRelative();
+        gyroSPI.resetRelative();
         driveLeftTop.setSelectedSensorPosition(0);
         driveRightTop.setSelectedSensorPosition(0);
         pdp.clearStickyFaults();
