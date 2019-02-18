@@ -28,7 +28,7 @@ public class Drive extends Subsystem {
       }
 
       protected void initialize() {
-        System.out.println("Starting drive");
+        System.out.println("Starting " + this.getSubsystem());
       }
 
       protected void execute() {
@@ -41,26 +41,26 @@ public class Drive extends Subsystem {
       }
 
       protected void end() {
-        System.out.println("Stopping drive");
+        System.out.println("Stopping " + this.getSubsystem());
         stopMoving();
       }
 
       protected void interrupted() {
-        System.out.println("Snapplejacks, " + this.getName() + " stopped!");
+        System.out.println("Sn4pplejacks, " + this.getSubsystem() + " stopped!");
         end();
       }
     });
   }
 
   public static void driveLR(double left, double right) {
-    RobotMap.driveLeftFront.set(ControlMode.PercentOutput, left);
-    RobotMap.driveRightFront.set(ControlMode.PercentOutput, right);
+    RobotMap.driveLeftTop.set(ControlMode.PercentOutput, left);
+    RobotMap.driveRightTop.set(ControlMode.PercentOutput, right);
   }
   
   public static void stopMoving() {
-    RobotMap.driveLeftFront.set(ControlMode.PercentOutput, 0.0);
-    RobotMap.driveLeftRear.set(ControlMode.Follower, RobotMap.driveLeftFront.getDeviceID());
-    RobotMap.driveRightFront.set(ControlMode.PercentOutput, 0.0);
-    RobotMap.driveRightRear.set(ControlMode.Follower, RobotMap.driveRightFront.getDeviceID());
+    RobotMap.driveLeftTop.set(ControlMode.PercentOutput, 0.0);
+    RobotMap.driveLeftBot.set(ControlMode.Follower, RobotMap.driveLeftTop.getDeviceID());
+    RobotMap.driveRightTop.set(ControlMode.PercentOutput, 0.0);
+    RobotMap.driveRightBot.set(ControlMode.Follower, RobotMap.driveRightTop.getDeviceID());
   }
 }

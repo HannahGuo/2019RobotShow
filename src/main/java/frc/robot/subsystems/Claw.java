@@ -9,26 +9,11 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import frc.robot.RobotMap;
-public class Elevator extends Subsystem {
-  private static Elevator instance;
-  private static int ABSOLUTE_STARTING_POSITION = 0;
 
-  public static Elevator getInstance() {
-    return instance == null ? instance = new Elevator() : instance;
-  }
-
-  public enum ElevatorState {
-    ZERO, INTAKE, ROCKET1, ROCKET2, ROCKET3
-  }
-
-  private Elevator(){
-    int currentValue = RobotMap.elevatorTop.getSensorCollection().getPulseWidthPosition();
-    RobotMap.elevatorTop.getSensorCollection().setPulseWidthPosition(0, 10);
-    double dT = System.currentTimeMillis();
-    while(System.currentTimeMillis() - dT < 2056 && currentValue == RobotMap.elevatorTop.getSensorCollection().getPulseWidthPosition());
-    ABSOLUTE_STARTING_POSITION = RobotMap.elevatorTop.getSelectedSensorPosition(0);
-    System.out.println("ABSOLUTE STARTING POSITION" + ABSOLUTE_STARTING_POSITION);
+public class Claw extends Subsystem {
+  private static Claw instance;
+  public static Claw getInstance() {
+    return instance == null ? instance = new Claw() : instance;
   }
 
   @Override

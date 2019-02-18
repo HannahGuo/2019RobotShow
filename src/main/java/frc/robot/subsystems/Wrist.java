@@ -7,28 +7,16 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
-public class Elevator extends Subsystem {
-  private static Elevator instance;
-  private static int ABSOLUTE_STARTING_POSITION = 0;
 
-  public static Elevator getInstance() {
-    return instance == null ? instance = new Elevator() : instance;
-  }
-
-  public enum ElevatorState {
-    ZERO, INTAKE, ROCKET1, ROCKET2, ROCKET3
-  }
-
-  private Elevator(){
-    int currentValue = RobotMap.elevatorTop.getSensorCollection().getPulseWidthPosition();
-    RobotMap.elevatorTop.getSensorCollection().setPulseWidthPosition(0, 10);
-    double dT = System.currentTimeMillis();
-    while(System.currentTimeMillis() - dT < 2056 && currentValue == RobotMap.elevatorTop.getSensorCollection().getPulseWidthPosition());
-    ABSOLUTE_STARTING_POSITION = RobotMap.elevatorTop.getSelectedSensorPosition(0);
-    System.out.println("ABSOLUTE STARTING POSITION" + ABSOLUTE_STARTING_POSITION);
+public class Wrist extends Subsystem {
+  private static Wrist instance;
+  public static Wrist getInstance() {
+    return instance == null ? instance = new Wrist() : instance;
   }
 
   @Override
@@ -36,6 +24,8 @@ public class Elevator extends Subsystem {
     setDefaultCommand(new Command() {
       {
         requires(getInstance());
+        int absolutePosition = RobotMap.wristControl.getSensorCollection().getPulseWidthPosition();
+        RobotMap.wristControl.setSelectedSensorPosition(absolutePosition, 0, 10);
       }
 
       protected void initialize() {
@@ -43,6 +33,7 @@ public class Elevator extends Subsystem {
       }
 
       protected void execute() {
+        // RobotMap.wristControl.set(ControlMode.Position, 0.0);
       }
 
       protected boolean isFinished() {

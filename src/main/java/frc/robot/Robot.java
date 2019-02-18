@@ -11,8 +11,10 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Wrist;
 
 public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
@@ -20,7 +22,9 @@ public class Robot extends TimedRobot {
 
   private Drive drive = Drive.getInstance();
   private RobotMap robotMap = RobotMap.getInstance();
-  // private Elevator elevator = Elevator.getInstance();
+  private Elevator elevator = Elevator.getInstance();
+  private Claw claw = Claw.getInstance();
+  private Wrist wrist = Wrist.getInstance();
   private OI oi = OI.getInstance();
   private Compressor c = new Compressor(0);
 
@@ -50,6 +54,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit(){
+    c.setClosedLoopControl(true);
     Scheduler.getInstance().removeAll();
   }
 
