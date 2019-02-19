@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -24,7 +25,7 @@ public class RobotMap {
     public static final TalonSRX wristControl = new TalonSRX(1);
 
     public static final Solenoid driveShifter = new Solenoid(0);
-    public static final Solenoid frogShifter = new Solenoid(1);
+    public static final Solenoid traumatizedGhosts = new Solenoid(1); // Frogs to the non-believers
 
     private static final PowerDistributionPanel pdp = new PowerDistributionPanel();
 
@@ -87,12 +88,15 @@ public class RobotMap {
 
         wristControl.set(ControlMode.Position, 0.0);
         wristControl.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+        wristControl.setNeutralMode(NeutralMode.Brake);
     }
 
     public static void resetSensors() {
         gyroSPI.resetRelative();
         driveLeftTop.setSelectedSensorPosition(0);
         driveRightTop.setSelectedSensorPosition(0);
+        wristControl.setSelectedSensorPosition(0);
+        elevatorTop.setSelectedSensorPosition(0);
         pdp.clearStickyFaults();
     }
 
@@ -102,6 +106,17 @@ public class RobotMap {
 
     public static void getDriveCurrents(){
         System.out.println("Drive currents: " + driveLeftTop.getOutputCurrent() + " " + driveRightTop.getOutputCurrent());
+    }
+
+    public static boolean getEncoderStatus(TalonSRX talonToCheck){
+        ErrorCode checkSensor = talonToCheck.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+        
+        if(checkSensor != ErrorCode.OK) {
+            System.out.println(talonToCheck.getDeviceID() + " has an unplugged encoder!");
+            return false;
+        } 
+        
+        return true;
     }
 
     public static void checkTalonVersions() {

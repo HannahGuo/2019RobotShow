@@ -17,30 +17,47 @@ import frc.robot.RobotMap;
 public class Elevator extends Subsystem {
   private static Elevator instance;
   private static int ABSOLUTE_STARTING_POSITION = 0;
-  public static ElevatorState elevatorState = ElevatorState.ZERO;
+  public static ElevatorState elevatorState = ElevatorState.MANUAL;
 
   public static Elevator getInstance() {
     return instance == null ? instance = new Elevator() : instance;
   }
 
   public enum ElevatorState {
-    MANUAL(0.0, 0),
-    ZERO(0.0, 0),
-    INTAKE(0.0, 0),
-    ROCKET1(0.0, 0),
-    ROCKET2(0.0, 0),
-    ROCKET3(0.0, 0);
+    MANUAL(0, 0, 0, 0),
+    ZERO(0, 0, 0, 0),
+    HOLD(0, 0, 0, 0),
+    INTAKEBALL(0, 0, 0, 0),
+    INTAKEHATCH(0, 0, 0, 0),
+    HATCH1(0, 0, 0, 0),
+    HATCH2(0, 0, 0, 0),
+    HATCH3(0, 0, 0, 0),
+    BALL1(0, 0, 0, 0),
+    BALL2(0, 0, 0, 0),
+    BALL3(0, 0, 0, 0);
 
-    private final double height;
+    private final int elevatorHeight;
+    private final int clawAngle;
+    private final int vel;
     private final int accel;
 
-    ElevatorState(double height, int accel) {
-      this.height = height;
+    ElevatorState(int elevatorHeight, int clawAngle, int vel, int accel) {
+      this.elevatorHeight = elevatorHeight;
+      this.clawAngle = clawAngle;
+      this.vel = vel;
       this.accel = accel;
     }
 
-    private double getHeight() {
-      return height;
+    private int getElevatorHeight() {
+      return elevatorHeight;
+    }
+
+    private int getClawAngle(){
+      return clawAngle;
+    }
+
+    private int getVel(){
+      return vel;
     }
 
     private int getAccel() {
@@ -69,19 +86,23 @@ public class Elevator extends Subsystem {
       }
 
       protected void execute() {
-        if (OI.getSecondaryA()) elevatorState = ElevatorState.INTAKE;
-        else if (OI.getSecondaryB()) elevatorState = ElevatorState.ROCKET1;
-        else if (OI.getSecondaryX()) elevatorState = ElevatorState.ROCKET2;
-        else if (OI.getSecondaryY()) elevatorState = ElevatorState.ROCKET3;
-        else if (OI.getSecondaryStart()) elevatorState = ElevatorState.MANUAL;
-        else if (OI.getSecondaryBack()) elevatorState = ElevatorState.ZERO;
+        // if (OI.getSecondaryA()) elevatorState = ElevatorState.INTAKE;
+        // else if (OI.getSecondaryB()) elevatorState = ElevatorState.ROCKET1;
+        // else if (OI.getSecondaryX()) elevatorState = ElevatorState.ROCKET2;
+        // else if (OI.getSecondaryY()) elevatorState = ElevatorState.ROCKET3;
+        // else if (OI.getSecondaryStart()) elevatorState = ElevatorState.MANUAL;
+        // else if (OI.getSecondaryBack()) elevatorState = ElevatorState.ZERO;
 
-        RobotMap.elevatorTop.configMotionAcceleration(elevatorState.getAccel(), 10);
+        if (elevatorState != ElevatorState.MANUAL) {
+          RobotMap.elevatorTop.configMotionCruiseVelocity(elevatorState.getVel(), 10);
+          RobotMap.elevatorTop.configMotionAcceleration(elevatorState.getAccel(), 10);
+          RobotMap.elevatorTop.set(ControlMode.MotionMagic, elevatorState.getElevatorHeight());
+        } else {
+          RobotMap.elevatorTop.set(ControlMode.PercentOutput, OI.getSecondaryA1());
+        } 
 
-        if (elevatorState != ElevatorState.MANUAL)
-          RobotMap.elevatorTop.set(ControlMode.MotionMagic, elevatorState.getHeight());
-        else
-          RobotMap.elevatorTop.set(ControlMode.MotionMagic, OI.getSecondaryA1());
+        RobotMap.elevatorBot.follow(RobotMap.elevatorTop);
+
       }
 
       protected boolean isFinished() {
