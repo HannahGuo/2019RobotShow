@@ -23,6 +23,10 @@ public class OI {
         return secondary.getRawAxis(1);
     } //LeftStickYAxis
 
+    public static double getSecondaryA3() {
+        return secondary.getRawAxis(3);
+    } //RightStickYAxis
+
     static boolean getPrimaryAPressed() {
         return primary.getRawButtonPressed(2);
     }
@@ -43,11 +47,11 @@ public class OI {
         return primary.getRawButton(4);
     }
 
-    static boolean getPrimaryLB() {
+    public static boolean getPrimaryLB() {
         return primary.getRawButton(5);
     }
 
-    static boolean getPrimaryRB() {
+    public static boolean getPrimaryRB() {
         return primary.getRawButton(6);
     }
 

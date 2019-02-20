@@ -25,11 +25,11 @@ public class RobotMap {
     public static final TalonSRX wristControl = new TalonSRX(1);
 
     public static final Solenoid driveShifter = new Solenoid(0);
-    public static final Solenoid traumatizedGhosts = new Solenoid(1); // Frogs to the non-believers
+    // public static final Solenoid traumatizedGhosts = new Solenoid(1); // Frogs to the non-believers
 
-    private static final PowerDistributionPanel pdp = new PowerDistributionPanel();
+    public static final PowerDistributionPanel pdp = new PowerDistributionPanel();
 
-    public static final ADXRS453Gyro gyroSPI = new ADXRS453Gyro(); //Counter-clockwise (Left) = negative, clockwise (Right) = positive
+    // public static final ADXRS453Gyro gyroSPI = new ADXRS453Gyro(); //Counter-clockwise (Left) = negative, clockwise (Right) = positive
 
     private static int talonVersion = 0x04017;
 
@@ -49,6 +49,7 @@ public class RobotMap {
         driveLeftTop.configPeakCurrentDuration(0);
         driveLeftTop.configContinuousCurrentLimit(35, 10);
         driveLeftTop.enableCurrentLimit(true);
+        driveLeftTop.setInverted(true);
 
         driveLeftBot.follow(driveLeftTop);
         driveLeftBot.setNeutralMode(NeutralMode.Brake);
@@ -58,6 +59,7 @@ public class RobotMap {
         driveLeftBot.configPeakCurrentDuration(0);
         driveLeftBot.configContinuousCurrentLimit(35, 10);
         driveLeftBot.enableCurrentLimit(true);
+        driveLeftBot.setInverted(true);
 
         driveRightTop.set(ControlMode.PercentOutput, 0.0);
         driveRightTop.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
@@ -65,6 +67,10 @@ public class RobotMap {
         driveRightTop.setNeutralMode(NeutralMode.Brake);
         driveRightTop.configVoltageCompSaturation(12.0, 10);
         driveRightTop.enableVoltageCompensation(true);
+        driveRightTop.configPeakCurrentLimit(0, 10);
+        driveRightTop.configPeakCurrentDuration(0);
+        driveRightTop.configContinuousCurrentLimit(35, 10);
+        driveRightTop.setInverted(true);
 
         driveRightBot.follow(driveRightTop);
         driveRightBot.setNeutralMode(NeutralMode.Brake);
@@ -74,6 +80,7 @@ public class RobotMap {
         driveRightBot.configPeakCurrentDuration(0);
         driveRightBot.configContinuousCurrentLimit(35, 10);
         driveRightBot.enableCurrentLimit(true);
+        driveRightBot.setInverted(true);
 
         elevatorTop.set(ControlMode.MotionMagic, 0.0);
         elevatorTop.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
@@ -92,7 +99,7 @@ public class RobotMap {
     }
 
     public static void resetSensors() {
-        gyroSPI.resetRelative();
+        // gyroSPI.resetRelative();
         driveLeftTop.setSelectedSensorPosition(0);
         driveRightTop.setSelectedSensorPosition(0);
         wristControl.setSelectedSensorPosition(0);

@@ -37,23 +37,20 @@ public class Elevator extends Subsystem {
     BALL3(0, 0, 0, 0);
 
     private final int elevatorHeight;
-    private final int clawAngle;
     private final int vel;
     private final int accel;
+    private final int clawAngle;
 
-    ElevatorState(int elevatorHeight, int clawAngle, int vel, int accel) {
+    ElevatorState(int elevatorHeight, int vel, int accel, int clawAngle) {
       this.elevatorHeight = elevatorHeight;
-      this.clawAngle = clawAngle;
       this.vel = vel;
       this.accel = accel;
+
+      this.clawAngle = clawAngle;
     }
 
     private int getElevatorHeight() {
       return elevatorHeight;
-    }
-
-    private int getClawAngle(){
-      return clawAngle;
     }
 
     private int getVel(){
@@ -62,6 +59,10 @@ public class Elevator extends Subsystem {
 
     private int getAccel() {
       return accel;
+    }
+
+    private int getClawAngle(){
+      return clawAngle;
     }
   }
 
@@ -93,16 +94,21 @@ public class Elevator extends Subsystem {
         // else if (OI.getSecondaryStart()) elevatorState = ElevatorState.MANUAL;
         // else if (OI.getSecondaryBack()) elevatorState = ElevatorState.ZERO;
 
+
+        // Elevator Heights
         if (elevatorState != ElevatorState.MANUAL) {
           RobotMap.elevatorTop.configMotionCruiseVelocity(elevatorState.getVel(), 10);
           RobotMap.elevatorTop.configMotionAcceleration(elevatorState.getAccel(), 10);
           RobotMap.elevatorTop.set(ControlMode.MotionMagic, elevatorState.getElevatorHeight());
+
+          RobotMap.elevatorBot.follow(RobotMap.elevatorTop);
+
         } else {
           RobotMap.elevatorTop.set(ControlMode.PercentOutput, OI.getSecondaryA1());
-        } 
+          RobotMap.elevatorBot.follow(RobotMap.elevatorTop);
 
-        RobotMap.elevatorBot.follow(RobotMap.elevatorTop);
-
+          RobotMap.wristControl.set(ControlMode.PercentOutput, OI.getSecondaryA3());
+        }         
       }
 
       protected boolean isFinished() {

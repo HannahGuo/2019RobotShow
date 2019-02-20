@@ -24,4 +24,8 @@ public class Constants {
     public static double[] getAngPID() {
         return new double[] {angP, angI, angD};
     }
+
+    public static double degToTicks(double degrees) {
+        return degrees * (4096 / 360);
+    }
 }

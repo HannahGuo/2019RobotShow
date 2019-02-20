@@ -10,10 +10,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import frc.robot.Constants;
 import frc.robot.OI;
 import frc.robot.RobotMap;
-import frc.robot.SynchronousPID;
 
 public class Drive extends Subsystem {
   private static Drive instance;
@@ -22,54 +20,41 @@ public class Drive extends Subsystem {
     return instance == null ? instance = new Drive() : instance;
   }
 
+  @Override
   public void initDefaultCommand() {
-		setDefaultCommand(new Command() {
-			private SynchronousPID hPID;
-			private boolean stopGyro = false;
+    setDefaultCommand(new Command() {
+      {
+        requires(getInstance());
+      }
 
-			{
-				this.hPID = new SynchronousPID();
-				this.hPID.setOutputRange(-1.0, 1.0);
-				requires(getInstance());
-			}
+      protected void initialize() {
+        System.out.println("Starting " + this.getSubsystem());
+      }
 
-			protected void initialize() {
-				System.out.println("Starting drive");
-				this.hPID.reset();
-				this.hPID.setPID(Constants.getAngPID());
-				stopMoving();
-			}
+      protected void execute() {
+        double straight = OI.getStraight(), steering = OI.getSteering();
+        driveLR(-straight - steering, straight - steering);
 
-			protected void execute() {
-				if(OI.getPrimaryStart())
-					stopGyro = true;
-				else if(OI.getPrimaryBack())
-					stopGyro = false;
-				if(!stopGyro) {
-					double straight = OI.getStraight(), steering = Math.pow(OI.getSteering(), 3), head;
-					this.hPID.setSetpoint(steering * 400);
-          head = this.hPID.calculate(RobotMap.gyroSPI.getRate());
-          driveLR(-straight + head, straight + head);
-				} else {
-					driveLR(0.0, 0.0);
-				}
-			}
+        if(OI.getPrimaryRB()) RobotMap.driveShifter.set(false); // low gear
+        else if(OI.getPrimaryLB()) RobotMap.driveShifter.set(true); // high gear
 
-			protected boolean isFinished() {
-				return false;
-			}
+      }
 
-			protected void end() {
-				System.out.println("Stopping drive");
-				this.hPID.reset();
-				stopMoving();
-			}
+      protected boolean isFinished() {
+        return false;
+      }
 
-			protected void interrupted() {
-				end();
-			}
-		});
-	}
+      protected void end() {
+        System.out.println("Stopping " + this.getSubsystem());
+        stopMoving();
+      }
+
+      protected void interrupted() {
+        System.out.println("Sn4pplejacks, " + this.getSubsystem() + " stopped!");
+        end();
+      }
+    });
+  }
 
   public static void driveLR(double left, double right) {
     RobotMap.driveLeftTop.set(ControlMode.PercentOutput, left);

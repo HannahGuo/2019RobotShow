@@ -45,13 +45,13 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit(){
     drive.stopMoving();
-    robotMap.resetSensors();
   }
 
   @Override
   public void teleopInit(){
     c.setClosedLoopControl(true);
     Scheduler.getInstance().removeAll();
+    robotMap.resetSensors();
   }
 
   @Override
