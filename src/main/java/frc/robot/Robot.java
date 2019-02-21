@@ -45,6 +45,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit(){
     drive.stopMoving();
+    System.out.println("BUTTON STATUS: " + robotMap.buttonTest.get());
   }
 
   @Override

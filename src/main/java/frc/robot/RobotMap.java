@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
 
@@ -27,11 +28,8 @@ public class RobotMap {
     public static final Solenoid driveShifter = new Solenoid(0);
     // public static final Solenoid traumatizedGhosts = new Solenoid(1); // Frogs to the non-believers
 
+    public static final DigitalInput buttonTest = new DigitalInput(0);
     public static final PowerDistributionPanel pdp = new PowerDistributionPanel();
-
-    // public static final ADXRS453Gyro gyroSPI = new ADXRS453Gyro(); //Counter-clockwise (Left) = negative, clockwise (Right) = positive
-
-    private static int talonVersion = 0x04017;
 
     private static RobotMap instance;
     public static RobotMap getInstance() {
@@ -124,45 +122,5 @@ public class RobotMap {
         } 
         
         return true;
-    }
-
-    public static void checkTalonVersions() {
-        if (driveLeftTop.getFirmwareVersion() == talonVersion) {
-            if (driveLeftBot.getFirmwareVersion() == talonVersion) {
-                if (driveRightTop.getFirmwareVersion() == talonVersion) {
-                    if (driveRightBot.getFirmwareVersion() == talonVersion) {
-                        if(wristControl.getFirmwareVersion() == talonVersion){
-                            if(elevatorTop.getFirmwareVersion() == talonVersion){
-                                if(elevatorBot.getFirmwareVersion() == talonVersion){
-                                    if(intakeTop.getFirmwareVersion() == talonVersion){
-                                        if(intakeBot.getFirmwareVersion() == talonVersion) {
-                                            System.out.println("All talons up to date.");
-                                        } else {
-                                            System.out.println(intakeBot.getDeviceID() + " is not updated");
-                                        }
-                                    } else {
-                                        System.out.println(intakeTop.getDeviceID() + " is not updated");
-                                    }
-                                } else {
-                                    System.out.print(elevatorBot.getDeviceID() + " is not updated");
-                                }
-                            } else {
-                                System.out.println(elevatorTop.getDeviceID() + " is not updated");
-                            }
-                        } else {
-                            System.out.println(wristControl.getDeviceID() + " is not updated");
-                        }
-                    } else {
-                        System.out.println(driveRightBot.getDeviceID() + " is not updated");
-                    }
-                } else {
-                    System.out.println(driveRightTop.getDeviceID() + " is not updated");
-                }
-            } else {
-                System.out.println(driveLeftBot.getDeviceID() + " is not updated");
-            }
-        } else {
-            System.out.println(driveLeftTop.getDeviceID() + " is not updated");
-        }
     }
 }
