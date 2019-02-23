@@ -7,10 +7,13 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
 
@@ -45,6 +48,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit(){
     drive.stopMoving();
+    robotMap.elevatorTop.set(ControlMode.PercentOutput, 0);
   }
 
   @Override
@@ -52,6 +56,13 @@ public class Robot extends TimedRobot {
     c.setClosedLoopControl(true);
     Scheduler.getInstance().removeAll();
     robotMap.resetSensors();
+    SmartDashboard.putNumber("EUP", 0.0);
+    SmartDashboard.putNumber("EUI", 0.0);
+    SmartDashboard.putNumber("EUD", 0.0);
+
+    SmartDashboard.putNumber("EDP", 0.0);
+    SmartDashboard.putNumber("EDI", 0.0);
+    SmartDashboard.putNumber("EDD", 0.0);
   }
 
   @Override

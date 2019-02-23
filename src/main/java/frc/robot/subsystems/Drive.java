@@ -28,7 +28,7 @@ public class Drive extends Subsystem {
       }
 
       protected void initialize() {
-        System.out.println("Starting " + this.getSubsystem());
+        System.out.println("Starting " + this.getName());
       }
 
       protected void execute() {
@@ -44,13 +44,8 @@ public class Drive extends Subsystem {
         return false;
       }
 
-      protected void end() {
-        System.out.println("Stopping " + this.getSubsystem());
-        stopMoving();
-      }
-
       protected void interrupted() {
-        System.out.println("Sn4pplejacks, " + this.getSubsystem() + " stopped!");
+        System.out.println("Sn4pplejacks, " + this.getName() + " stopped!");
         end();
       }
     });

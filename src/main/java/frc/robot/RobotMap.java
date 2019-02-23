@@ -29,7 +29,7 @@ public class RobotMap {
 
     public static final PowerDistributionPanel pdp = new PowerDistributionPanel();
 
-    // public static final ADXRS453Gyro gyroSPI = new ADXRS453Gyro(); //Counter-clockwise (Left) = negative, clockwise (Right) = positive
+    public static final ADXRS453Gyro gyroSPI = new ADXRS453Gyro(); //Counter-clockwise (Left) = negative, clockwise (Right) = positive
 
     private static int talonVersion = 0x04017;
 
@@ -83,11 +83,13 @@ public class RobotMap {
         driveRightBot.setInverted(true);
 
         elevatorTop.set(ControlMode.MotionMagic, 0.0);
-        elevatorTop.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
         elevatorTop.setNeutralMode(NeutralMode.Brake);
         
         elevatorBot.follow(elevatorTop);
         elevatorBot.setNeutralMode(NeutralMode.Brake);
+        elevatorBot.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+        elevatorBot.setInverted(false);
+        elevatorBot.setSensorPhase(true);
 
         intakeTop.set(ControlMode.PercentOutput, 0.0);
 
@@ -103,8 +105,12 @@ public class RobotMap {
         driveLeftTop.setSelectedSensorPosition(0);
         driveRightTop.setSelectedSensorPosition(0);
         wristControl.setSelectedSensorPosition(0);
-        elevatorTop.setSelectedSensorPosition(0);
+        elevatorBot.setSelectedSensorPosition(0);
         pdp.clearStickyFaults();
+    }
+
+    public static void getElevatorOutputs() {
+        System.out.println("Elevator Outputs:" + elevatorBot.getSelectedSensorPosition());
     }
 
     public static void getEncoderOutputs() {
@@ -124,45 +130,5 @@ public class RobotMap {
         } 
         
         return true;
-    }
-
-    public static void checkTalonVersions() {
-        if (driveLeftTop.getFirmwareVersion() == talonVersion) {
-            if (driveLeftBot.getFirmwareVersion() == talonVersion) {
-                if (driveRightTop.getFirmwareVersion() == talonVersion) {
-                    if (driveRightBot.getFirmwareVersion() == talonVersion) {
-                        if(wristControl.getFirmwareVersion() == talonVersion){
-                            if(elevatorTop.getFirmwareVersion() == talonVersion){
-                                if(elevatorBot.getFirmwareVersion() == talonVersion){
-                                    if(intakeTop.getFirmwareVersion() == talonVersion){
-                                        if(intakeBot.getFirmwareVersion() == talonVersion) {
-                                            System.out.println("All talons up to date.");
-                                        } else {
-                                            System.out.println(intakeBot.getDeviceID() + " is not updated");
-                                        }
-                                    } else {
-                                        System.out.println(intakeTop.getDeviceID() + " is not updated");
-                                    }
-                                } else {
-                                    System.out.print(elevatorBot.getDeviceID() + " is not updated");
-                                }
-                            } else {
-                                System.out.println(elevatorTop.getDeviceID() + " is not updated");
-                            }
-                        } else {
-                            System.out.println(wristControl.getDeviceID() + " is not updated");
-                        }
-                    } else {
-                        System.out.println(driveRightBot.getDeviceID() + " is not updated");
-                    }
-                } else {
-                    System.out.println(driveRightTop.getDeviceID() + " is not updated");
-                }
-            } else {
-                System.out.println(driveLeftBot.getDeviceID() + " is not updated");
-            }
-        } else {
-            System.out.println(driveLeftTop.getDeviceID() + " is not updated");
-        }
     }
 }
