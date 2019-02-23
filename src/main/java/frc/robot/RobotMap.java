@@ -3,6 +3,7 @@ package frc.robot;
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -26,9 +27,10 @@ public class RobotMap {
     public static final TalonSRX wristControl = new TalonSRX(1);
 
     public static final Solenoid driveShifter = new Solenoid(0);
-    // public static final Solenoid traumatizedGhosts = new Solenoid(1); // Frogs to the non-believers
+    public static final Solenoid traumatizedGhosts = new Solenoid(1); // Frogs to the non-believers
 
-    public static final DigitalInput buttonTest = new DigitalInput(0);
+    public static final DigitalInput zeroMe = new DigitalInput(0); // False = Pressed
+    public static final DigitalInput lightSensor = new DigitalInput(9);
     public static final PowerDistributionPanel pdp = new PowerDistributionPanel();
     
     public static final ADXRS453Gyro gyroSPI = new ADXRS453Gyro(); //Counter-clockwise (Left) = negative, clockwise (Right) = positive
@@ -86,18 +88,21 @@ public class RobotMap {
         elevatorBot.setNeutralMode(NeutralMode.Brake);
         elevatorBot.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
         elevatorBot.setInverted(false);
-        elevatorBot.setSensorPhase(true);
+        elevatorBot.setSensorPhase(false);
 
         elevatorTop.follow(elevatorBot);
         elevatorTop.setNeutralMode(NeutralMode.Brake);
+        elevatorTop.setInverted(InvertType.FollowMaster);
 
         intakeTop.set(ControlMode.PercentOutput, 0.0);
 
         intakeBot.follow(intakeTop);
 
-        wristControl.set(ControlMode.Position, 0.0);
+        wristControl.set(ControlMode.MotionMagic, 0.0);
         wristControl.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
         wristControl.setNeutralMode(NeutralMode.Brake);
+        wristControl.setSensorPhase(false);
+        wristControl.setInverted(false);
     }
 
     public static void resetSensors() {

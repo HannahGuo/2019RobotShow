@@ -19,6 +19,10 @@ public class OI {
         return primary.getRawAxis(2);
     } //RightStickXAxis
 
+    public static double getPrimaryA3(){
+        return primary.getRawAxis(3);
+    }
+
     public static double getSecondaryA1() {
         return secondary.getRawAxis(1);
     } //LeftStickYAxis

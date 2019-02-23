@@ -25,17 +25,23 @@ public class Elevator extends Subsystem {
   }
 
   public enum ElevatorState {
+    //No, I don't know why these have to be negative. 
+    //Yes, I have tried reversing stuff. 
+
     MANUAL(0, 0, 0, 0),
     ZERO(0, 0, 0, 0),
-    HOLD(0, 0, 0, 0),
+    HOLD(0, 0, 0, -592),
     INTAKEBALL(0, 0, 0, 0),
     INTAKEHATCH(0, 0, 0, 0),
-    HATCH1(0, 0, 0, 0),
-    HATCH2(0, 0, 0, 0),
-    HATCH3(0, 0, 0, 0),
-    BALL1(0, 0, 0, 0),
-    BALL2(0, 0, 0, 0),
-    BALL3(0, 0, 0, 0);
+    HATCH1(-6766, 0, 0, 0),
+    HATCH2(-46450, 0, 0, 0),
+    HATCH3(-85850, 0, 0, 0),
+    BALL1(-22500, -205000, -950000, 0),
+    BALL2(-65200, -205000, -950000, 0),
+    BALL3(-92600, 0, 0, 0),
+    TESTING(0, 0, 0, 0);
+
+    //Elevator Height, Vel, Accel, Claw, Angle
 
     private final int elevatorHeight;
     private final int vel;
@@ -46,7 +52,6 @@ public class Elevator extends Subsystem {
       this.elevatorHeight = elevatorHeight;
       this.vel = vel;
       this.accel = accel;
-
       this.clawAngle = clawAngle;
     }
 
@@ -68,12 +73,7 @@ public class Elevator extends Subsystem {
   }
 
   private Elevator() {
-    // int currentValue = RobotMap.elevatorTop.getSensorCollection().getPulseWidthPosition();
     RobotMap.elevatorBot.getSensorCollection().setPulseWidthPosition(0, 10);
-    // double dT = System.currentTimeMillis();
-    // while (System.currentTimeMillis() - dT < 2056 && currentValue == RobotMap.elevatorTop.getSensorCollection().getPulseWidthPosition());
-    // ABSOLUTE_STARTING_POSITION = RobotMap.elevatorTop.getSelectedSensorPosition(0);
-    // System.out.println("ABSOLUTE STARTING POSITION" + ABSOLUTE_STARTING_POSITION);
   }
 
   @Override
@@ -85,49 +85,56 @@ public class Elevator extends Subsystem {
 
       protected void initialize() {
         System.out.println("Starting " + this.getName());
-        // RobotMap.elevatorBot.getSensorCollection().setPulseWidthPosition(0, 10);
+        if(!RobotMap.zeroMe.get()) {
+          RobotMap.elevatorBot.getSensorCollection().setQuadraturePosition(0, 10);
+          System.out.println("Elevator has been zeroed!");
+        } else {
+          System.out.println("Please zero the elevator!!!");
+        }
+        RobotMap.elevatorBot.config_kP(0, 0.8, 10);
+        RobotMap.elevatorBot.config_kI(0, 0.0, 10);
+        RobotMap.elevatorBot.config_kD(0, 0.0, 10);
+        RobotMap.elevatorBot.config_kF(0, 0.5, 10);
+        RobotMap.elevatorBot.selectProfileSlot(0, 0);
+
+        RobotMap.wristControl.config_kP(0, 0.01, 10);
+        RobotMap.wristControl.config_kI(0, 0.0, 10);
+        RobotMap.wristControl.config_kD(0, 0.0, 10);
+        RobotMap.wristControl.config_kF(0, 0.02, 10);
+        RobotMap.wristControl.selectProfileSlot(0, 0);
       }
 
       protected void execute() {
-        // if (OI.getSecondaryA()) elevatorState = ElevatorState.INTAKE;
-        // else if (OI.getSecondaryB()) elevatorState = ElevatorState.ROCKET1;
+        if (OI.getPrimaryA()) elevatorState = ElevatorState.BALL1;
+        else if(OI.getPrimaryB()) elevatorState = ElevatorState.BALL2;
+        else if (OI.getPrimaryX()) elevatorState = ElevatorState.TESTING;
+        else if(OI.getPrimaryY()) {
+          RobotMap.wristControl.getSensorCollection().setQuadraturePosition(0, 10);
+          System.out.println("WRIST CONTROL " + RobotMap.wristControl.getSelectedSensorPosition());
+        }
         // else if (OI.getSecondaryX()) elevatorState = ElevatorState.ROCKET2;
         // else if (OI.getSecondaryY()) elevatorState = ElevatorState.ROCKET3;
         // else if (OI.getSecondaryStart()) elevatorState = ElevatorState.MANUAL;
         // else if (OI.getSecondaryBack()) elevatorState = ElevatorState.ZERO;
-        if(OI.getPrimaryA()){
-          RobotMap.elevatorBot.config_kP(0, 0.2, 10);
-		      RobotMap.elevatorBot.config_kI(0, 0.0, 10);
-		      RobotMap.elevatorBot.config_kD(0, 0.0, 10);
-          RobotMap.elevatorBot.config_kF(0, 0.2, 10);
-          RobotMap.elevatorBot.selectProfileSlot(0, 0);
-
-          RobotMap.elevatorBot.setSelectedSensorPosition(0);
-          RobotMap.elevatorBot.getSensorCollection().setPulseWidthPosition(0, 10);
-
-          elevatorState = ElevatorState.ZERO;
-          System.out.println("This ran!");
-        } 
         
-        // Elevator Heights
-        if (elevatorState != ElevatorState.MANUAL) {
-          // RobotMap.elevatorBot.configMotionCruiseVelocity(elevatorState.getVel(), 10);
-          // RobotMap.elevatorBot.configMotionAcceleration(elevatorState.getAccel(), 10);
-          // RobotMap.elevatorBot.set(ControlMode.MotionMagic, elevatorState.getElevatorHeight());
-
-          RobotMap.elevatorBot.configMotionCruiseVelocity(10000, 10);
-          RobotMap.elevatorBot.configMotionAcceleration(20000, 10);
-          RobotMap.elevatorBot.set(ControlMode.MotionMagic, 20000);
-          System.out.println("V" + RobotMap.elevatorBot.getMotorOutputVoltage());
-          System.out.println("Velo" + RobotMap.elevatorBot.getSelectedSensorVelocity());
-          
-        } else {
-          RobotMap.elevatorBot.set(ControlMode.PercentOutput, OI.getSecondaryA1());
-          RobotMap.elevatorTop.follow(RobotMap.elevatorTop);
-
-          RobotMap.wristControl.set(ControlMode.PercentOutput, OI.getSecondaryA3());
+        if(elevatorState == ElevatorState.TESTING) {
+          RobotMap.wristControl.configMotionCruiseVelocity(8000);
+          RobotMap.wristControl.configMotionAcceleration(10000);
+          RobotMap.wristControl.set(ControlMode.MotionMagic, 1000);
+          // RobotMap.wristControl.set(ControlMode.PercentOutput, OI.getPrimaryA3());
         }
-        RobotMap.getElevatorOutputs();         
+
+        // Elevator Heights
+        // if (elevatorState != ElevatorState.MANUAL) {
+        //   RobotMap.elevatorBot.configMotionCruiseVelocity(elevatorState.getVel(), 10);
+        //   RobotMap.elevatorBot.configMotionAcceleration(elevatorState.getAccel(), 10);
+        //   RobotMap.elevatorBot.set(ControlMode.MotionMagic, elevatorState.getElevatorHeight());      
+        // } else {
+        //   RobotMap.elevatorBot.set(ControlMode.PercentOutput, OI.getSecondaryA1());
+        //   RobotMap.elevatorTop.follow(RobotMap.elevatorBot);
+
+        //   RobotMap.wristControl.set(ControlMode.PercentOutput, OI.getSecondaryA3());
+        // }
       }
 
       protected boolean isFinished() {
@@ -146,6 +153,7 @@ public class Elevator extends Subsystem {
   }
 
   public static void stopMoving() {
+    elevatorState = ElevatorState.MANUAL;
     RobotMap.elevatorBot.set(ControlMode.PercentOutput, 0.0);
   }
 }
