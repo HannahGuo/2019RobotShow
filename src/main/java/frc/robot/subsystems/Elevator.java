@@ -107,7 +107,9 @@ public class Elevator extends Subsystem {
       protected void execute() {
         if (OI.getPrimaryA()) elevatorState = ElevatorState.BALL1;
         else if(OI.getPrimaryB()) elevatorState = ElevatorState.BALL2;
-        else if (OI.getPrimaryX()) elevatorState = ElevatorState.TESTING;
+        else if (OI.getPrimaryX()) {
+          elevatorState = ElevatorState.TESTING;
+        }
         else if(OI.getPrimaryY()) {
           RobotMap.wristControl.getSensorCollection().setQuadraturePosition(0, 10);
           System.out.println("WRIST CONTROL " + RobotMap.wristControl.getSelectedSensorPosition());
