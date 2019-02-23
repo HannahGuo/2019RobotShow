@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.OI;
 import frc.robot.RobotMap;
 
@@ -68,7 +69,7 @@ public class Elevator extends Subsystem {
 
   private Elevator() {
     // int currentValue = RobotMap.elevatorTop.getSensorCollection().getPulseWidthPosition();
-    // RobotMap.elevatorTop.getSensorCollection().setPulseWidthPosition(0, 10);
+    RobotMap.elevatorBot.getSensorCollection().setPulseWidthPosition(0, 10);
     // double dT = System.currentTimeMillis();
     // while (System.currentTimeMillis() - dT < 2056 && currentValue == RobotMap.elevatorTop.getSensorCollection().getPulseWidthPosition());
     // ABSOLUTE_STARTING_POSITION = RobotMap.elevatorTop.getSelectedSensorPosition(0);
@@ -83,7 +84,8 @@ public class Elevator extends Subsystem {
       }
 
       protected void initialize() {
-        System.out.println("Starting " + this.getSubsystem());
+        System.out.println("Starting " + this.getName());
+        // RobotMap.elevatorBot.getSensorCollection().setPulseWidthPosition(0, 10);
       }
 
       protected void execute() {
@@ -93,22 +95,39 @@ public class Elevator extends Subsystem {
         // else if (OI.getSecondaryY()) elevatorState = ElevatorState.ROCKET3;
         // else if (OI.getSecondaryStart()) elevatorState = ElevatorState.MANUAL;
         // else if (OI.getSecondaryBack()) elevatorState = ElevatorState.ZERO;
+        if(OI.getPrimaryA()){
+          RobotMap.elevatorBot.config_kP(0, 0.2, 10);
+		      RobotMap.elevatorBot.config_kI(0, 0.0, 10);
+		      RobotMap.elevatorBot.config_kD(0, 0.0, 10);
+          RobotMap.elevatorBot.config_kF(0, 0.2, 10);
+          RobotMap.elevatorBot.selectProfileSlot(0, 0);
 
+          RobotMap.elevatorBot.setSelectedSensorPosition(0);
+          RobotMap.elevatorBot.getSensorCollection().setPulseWidthPosition(0, 10);
 
+          elevatorState = ElevatorState.ZERO;
+          System.out.println("This ran!");
+        } 
+        
         // Elevator Heights
         if (elevatorState != ElevatorState.MANUAL) {
-          RobotMap.elevatorTop.configMotionCruiseVelocity(elevatorState.getVel(), 10);
-          RobotMap.elevatorTop.configMotionAcceleration(elevatorState.getAccel(), 10);
-          RobotMap.elevatorTop.set(ControlMode.MotionMagic, elevatorState.getElevatorHeight());
+          // RobotMap.elevatorBot.configMotionCruiseVelocity(elevatorState.getVel(), 10);
+          // RobotMap.elevatorBot.configMotionAcceleration(elevatorState.getAccel(), 10);
+          // RobotMap.elevatorBot.set(ControlMode.MotionMagic, elevatorState.getElevatorHeight());
 
-          RobotMap.elevatorBot.follow(RobotMap.elevatorTop);
-
+          RobotMap.elevatorBot.configMotionCruiseVelocity(10000, 10);
+          RobotMap.elevatorBot.configMotionAcceleration(20000, 10);
+          RobotMap.elevatorBot.set(ControlMode.MotionMagic, 20000);
+          System.out.println("V" + RobotMap.elevatorBot.getMotorOutputVoltage());
+          System.out.println("Velo" + RobotMap.elevatorBot.getSelectedSensorVelocity());
+          
         } else {
-          RobotMap.elevatorTop.set(ControlMode.PercentOutput, OI.getSecondaryA1());
-          RobotMap.elevatorBot.follow(RobotMap.elevatorTop);
+          RobotMap.elevatorBot.set(ControlMode.PercentOutput, OI.getSecondaryA1());
+          RobotMap.elevatorTop.follow(RobotMap.elevatorTop);
 
           RobotMap.wristControl.set(ControlMode.PercentOutput, OI.getSecondaryA3());
-        }         
+        }
+        RobotMap.getElevatorOutputs();         
       }
 
       protected boolean isFinished() {
@@ -116,13 +135,17 @@ public class Elevator extends Subsystem {
       }
 
       protected void end() {
-        System.out.println("Stopping " + this.getSubsystem());
+        System.out.println("Stopping " + this.getName());
       }
 
       protected void interrupted() {
-        System.out.println("Sn4pplejacks, " + this.getSubsystem() + " stopped!");
+        System.out.println("Sn4pplejacks, " + this.getName() + " stopped!");
         end();
       }
     });
+  }
+
+  public static void stopMoving() {
+    RobotMap.elevatorBot.set(ControlMode.PercentOutput, 0.0);
   }
 }

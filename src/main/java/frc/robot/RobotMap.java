@@ -30,6 +30,8 @@ public class RobotMap {
 
     public static final DigitalInput buttonTest = new DigitalInput(0);
     public static final PowerDistributionPanel pdp = new PowerDistributionPanel();
+    
+    public static final ADXRS453Gyro gyroSPI = new ADXRS453Gyro(); //Counter-clockwise (Left) = negative, clockwise (Right) = positive
 
     private static RobotMap instance;
     public static RobotMap getInstance() {
@@ -79,13 +81,15 @@ public class RobotMap {
         driveRightBot.configContinuousCurrentLimit(35, 10);
         driveRightBot.enableCurrentLimit(true);
         driveRightBot.setInverted(true);
-
-        elevatorTop.set(ControlMode.MotionMagic, 0.0);
-        elevatorTop.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-        elevatorTop.setNeutralMode(NeutralMode.Brake);
         
-        elevatorBot.follow(elevatorTop);
+        elevatorBot.set(ControlMode.MotionMagic, 0.0);
         elevatorBot.setNeutralMode(NeutralMode.Brake);
+        elevatorBot.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+        elevatorBot.setInverted(false);
+        elevatorBot.setSensorPhase(true);
+
+        elevatorTop.follow(elevatorBot);
+        elevatorTop.setNeutralMode(NeutralMode.Brake);
 
         intakeTop.set(ControlMode.PercentOutput, 0.0);
 
@@ -101,8 +105,12 @@ public class RobotMap {
         driveLeftTop.setSelectedSensorPosition(0);
         driveRightTop.setSelectedSensorPosition(0);
         wristControl.setSelectedSensorPosition(0);
-        elevatorTop.setSelectedSensorPosition(0);
+        elevatorBot.setSelectedSensorPosition(0);
         pdp.clearStickyFaults();
+    }
+
+    public static void getElevatorOutputs() {
+        System.out.println("Elevator Outputs:" + elevatorBot.getSelectedSensorPosition());
     }
 
     public static void getEncoderOutputs() {
