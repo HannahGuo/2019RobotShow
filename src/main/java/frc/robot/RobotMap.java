@@ -29,7 +29,8 @@ public class RobotMap {
     public static final Solenoid driveShifter = new Solenoid(0);
     public static final Solenoid traumatizedGhosts = new Solenoid(1); // Frogs to the non-believers
 
-    public static final DigitalInput zeroMe = new DigitalInput(0); // False = Pressed
+    public static final DigitalInput zeroThyElevator = new DigitalInput(0); // False = Pressed
+    public static final DigitalInput zeroThyWrist = new DigitalInput(1); // False = Pressed
     public static final DigitalInput lightSensor = new DigitalInput(9);
     public static final PowerDistributionPanel pdp = new PowerDistributionPanel();
     
@@ -84,15 +85,15 @@ public class RobotMap {
         driveRightBot.enableCurrentLimit(true);
         driveRightBot.setInverted(true);
         
-        elevatorBot.set(ControlMode.MotionMagic, 0.0);
-        elevatorBot.setNeutralMode(NeutralMode.Brake);
-        elevatorBot.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-        elevatorBot.setInverted(false);
-        elevatorBot.setSensorPhase(false);
-
-        elevatorTop.follow(elevatorBot);
+        elevatorTop.set(ControlMode.MotionMagic, 0.0);
         elevatorTop.setNeutralMode(NeutralMode.Brake);
-        elevatorTop.setInverted(InvertType.FollowMaster);
+        elevatorTop.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+        elevatorTop.setSensorPhase(false);
+        elevatorTop.setInverted(false);
+
+        elevatorBot.follow(elevatorTop);
+        elevatorBot.setNeutralMode(NeutralMode.Brake);
+        elevatorBot.setInverted(InvertType.FollowMaster);
 
         intakeTop.set(ControlMode.PercentOutput, 0.0);
 
@@ -101,7 +102,7 @@ public class RobotMap {
         wristControl.set(ControlMode.MotionMagic, 0.0);
         wristControl.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
         wristControl.setNeutralMode(NeutralMode.Brake);
-        wristControl.setSensorPhase(false);
+        wristControl.setSensorPhase(true);
         wristControl.setInverted(false);
     }
 
@@ -126,10 +127,10 @@ public class RobotMap {
         System.out.println("Drive currents: " + driveLeftTop.getOutputCurrent() + " " + driveRightTop.getOutputCurrent());
     }
 
-    public static boolean getEncoderStatus(TalonSRX talonToCheck){
+    public static boolean isEncoderConnected(TalonSRX talonToCheck){
         ErrorCode checkSensor = talonToCheck.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-        
-        if(checkSensor != ErrorCode.OK) {
+
+        if(checkSensor != ErrorCode.OK) { 
             System.out.println(talonToCheck.getDeviceID() + " has an unplugged encoder!");
             return false;
         } 

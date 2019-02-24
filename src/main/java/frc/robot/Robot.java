@@ -57,9 +57,10 @@ public class Robot extends TimedRobot {
     Scheduler.getInstance().removeAll();
     robotMap.resetSensors();
 
-    SmartDashboard.putNumber("EUP", 0.0);
+    SmartDashboard.putNumber("EUP", 0.5);
     SmartDashboard.putNumber("EUI", 0.0);
     SmartDashboard.putNumber("EUD", 0.0);
+    SmartDashboard.putNumber("EUF", 0.8);
 
     SmartDashboard.putNumber("EDP", 0.0);
     SmartDashboard.putNumber("EDI", 0.0);
