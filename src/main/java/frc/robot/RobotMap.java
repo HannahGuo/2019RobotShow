@@ -90,6 +90,12 @@ public class RobotMap {
         elevatorTop.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
         elevatorTop.setSensorPhase(false);
         elevatorTop.setInverted(false);
+        elevatorTop.config_kP(0, 1.1, 10);
+        elevatorTop.config_kI(0, 0.00025, 10);
+        elevatorTop.config_kD(0, 0.0, 10);
+        elevatorTop.config_kF(0, 0.25, 10);
+        elevatorTop.selectProfileSlot(0, 0);
+        elevatorTop.config_IntegralZone(0, 250, 10);
 
         elevatorBot.follow(elevatorTop);
         elevatorBot.setNeutralMode(NeutralMode.Brake);
@@ -104,6 +110,11 @@ public class RobotMap {
         wristControl.setNeutralMode(NeutralMode.Brake);
         wristControl.setSensorPhase(true);
         wristControl.setInverted(false);
+        wristControl.config_kP(0, 0.1, 10);
+        wristControl.config_kI(0, 0.00002, 10);
+        wristControl.config_kD(0, 0.0, 10);
+        wristControl.config_kF(0, 0.0, 10);
+        wristControl.selectProfileSlot(0, 0);
     }
 
     public static void resetSensors() {

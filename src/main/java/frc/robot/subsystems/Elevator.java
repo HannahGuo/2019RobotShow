@@ -27,12 +27,16 @@ public class Elevator extends Subsystem {
   }
 
   public enum ElevatorState {
-    //No, I don't know why these have to be negative. 
-    //Yes, I have tried reversing stuff. 
+    // No, I don't know why the positions have to be negative. 
+    // Yes, I have tried reversing stuff. 
+    // No, don't make the velocities and accelerations negative.
+    // Yes, that messes everything up.
 
+    // Elevator Height, Vel, Accel, Claw, Angle
+    // All of these units are in native encoder units (4096units/1rev)
     MANUAL(0, 0, 0, 0),
     ZERO(0, 0, 0, 0),
-    HOLD(0, 0, 0, -592),
+    HOLD(0, 0, 0, 5200),
     INTAKEBALL(0, 0, 0, 0),
     INTAKEHATCH(0, 0, 0, 0),
     HATCH1(-6766, 0, 0, 0),
@@ -43,18 +47,16 @@ public class Elevator extends Subsystem {
     BALL3(-92600, 20000, 10000, 0),
     TESTING(0, 0, 0, 0);
 
-    //Elevator Height, Vel, Accel, Claw, Angle
-
     private final int elevatorHeight;
     private final int vel;
     private final int accel;
-    private final int clawAngle;
+    private final int clawPosition;
 
-    ElevatorState(int elevatorHeight, int vel, int accel, int clawAngle) {
+    ElevatorState(int elevatorHeight, int vel, int accel, int clawPosition) {
       this.elevatorHeight = elevatorHeight;
       this.vel = vel;
       this.accel = accel;
-      this.clawAngle = clawAngle;
+      this.clawPosition = clawPosition;
     }
 
     private int getElevatorHeight() {
@@ -69,13 +71,9 @@ public class Elevator extends Subsystem {
       return accel;
     }
 
-    private int getClawAngle(){
-      return clawAngle;
+    private int getClawPosition(){
+      return clawPosition;
     }
-  }
-
-  private Elevator() {
-    RobotMap.elevatorTop.getSensorCollection().setPulseWidthPosition(0, 10);
   }
 
   @Override
@@ -87,34 +85,22 @@ public class Elevator extends Subsystem {
 
       protected void initialize() {
         System.out.println("Starting " + this.getName());
-        if(!RobotMap.zeroThyElevator.get()) {
-          RobotMap.elevatorBot.getSensorCollection().setQuadraturePosition(0, 10);
+
+        if(isElevatorButtonPressed()) {
+          RobotMap.elevatorTop.getSensorCollection().setQuadraturePosition(0, 10);
           System.out.println("Elevator has been zeroed!");
           elevatorZeroed = true;
         } else {
           System.out.println("Please zero the elevator!!");
         }
 
-        if(!RobotMap.zeroThyWrist.get()) {
+        if(isWristButtonPressed()) {
           RobotMap.wristControl.getSensorCollection().setQuadraturePosition(0, 10);
           System.out.println("Wrist has been zeroed!");
           wristZeroed = true;
         } else {
           System.out.println("Please zero the wrist!!");
         }
-
-        RobotMap.elevatorTop.config_kP(0, 1.1, 10);
-        RobotMap.elevatorTop.config_kI(0, 0.00025, 10);
-        RobotMap.elevatorTop.config_kD(0, 0.0, 10);
-        RobotMap.elevatorTop.config_kF(0, 0.25, 10);
-        RobotMap.elevatorTop.selectProfileSlot(0, 0);
-        RobotMap.elevatorTop.config_IntegralZone(0, 250, 10);
-
-        RobotMap.wristControl.config_kP(0, 0.1, 10);
-        RobotMap.wristControl.config_kI(0, 0.00002, 10);
-        RobotMap.wristControl.config_kD(0, 0.0, 10);
-        RobotMap.wristControl.config_kF(0, 0.0, 10);
-        RobotMap.wristControl.selectProfileSlot(0, 0);
       }
 
       protected void execute() {
@@ -129,31 +115,43 @@ public class Elevator extends Subsystem {
         //   RobotMap.elevatorBot.config_kF(0, SmartDashboard.getNumber("EUF", 0.02), 10);
         //   RobotMap.elevatorBot.selectProfileSlot(0, 0);
         // }
+
+        if(!elevatorZeroed) {
+          if(isElevatorButtonPressed()) {
+            RobotMap.elevatorTop.getSensorCollection().setQuadraturePosition(0, 10);
+            elevatorZeroed = true;
+          }
+          System.out.println("Please zero the elevator!");
+        }
+
+        if(!wristZeroed) {
+          if(isWristButtonPressed()) {
+            RobotMap.wristControl.getSensorCollection().setQuadraturePosition(0, 10);
+            wristZeroed = true;
+          } else {
+            System.out.println("Please zero the wrist!");
+          }
+        }
+        
         if(OI.getPrimaryY()) {
-          // RobotMap.wristControl.getSensorCollection().setQuadraturePosition(0, 10);
           System.out.println("WRIST CONTROL " + RobotMap.wristControl.getSelectedSensorPosition());
           elevatorState = ElevatorState.TESTING;
         }
-
+        
         if(elevatorState == ElevatorState.TESTING) {
           RobotMap.wristControl.configMotionCruiseVelocity(500);
           RobotMap.wristControl.configMotionAcceleration(1500);
           RobotMap.wristControl.set(ControlMode.MotionMagic, 5200);
-          // if(!RobotMap.zeroThyWrist.get()) {
-          //   RobotMap.wristControl.set(ControlMode.PercentOutput, 0.0);
-          // }
         } else if(elevatorState == ElevatorState.MANUAL) {
-          RobotMap.elevatorBot.set(ControlMode.PercentOutput, OI.getSecondaryA1());
-          RobotMap.elevatorTop.follow(RobotMap.elevatorBot);
+          RobotMap.elevatorTop.set(ControlMode.PercentOutput, OI.getSecondaryA1());
 
-          if(!RobotMap.zeroThyWrist.get() && OI.getPrimaryA3() <= 0) RobotMap.wristControl.set(ControlMode.PercentOutput, 0);
+          if(isWristButtonPressed() && OI.getPrimaryA3() <= 0) RobotMap.wristControl.set(ControlMode.PercentOutput, 0);
           else RobotMap.wristControl.set(ControlMode.PercentOutput, OI.getPrimaryA3());
         
         } else {
           RobotMap.elevatorTop.configMotionCruiseVelocity(elevatorState.getVel(), 10);
           RobotMap.elevatorTop.configMotionAcceleration(elevatorState.getAccel(), 10);
           RobotMap.elevatorTop.set(ControlMode.MotionMagic, elevatorState.getElevatorHeight());    
-          RobotMap.elevatorBot.follow(RobotMap.elevatorTop);  
         }  
       }
 
@@ -178,5 +176,13 @@ public class Elevator extends Subsystem {
     RobotMap.elevatorBot.set(ControlMode.PercentOutput, 0.0);
     elevatorZeroed = false;
     wristZeroed = false;
+  }
+
+  private static boolean isElevatorButtonPressed() {
+    return !RobotMap.zeroThyElevator.get();
+  }
+
+  private static boolean isWristButtonPressed(){
+    return !RobotMap.zeroThyWrist.get();
   }
 }
