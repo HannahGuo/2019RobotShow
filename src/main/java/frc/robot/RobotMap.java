@@ -103,18 +103,29 @@ public class RobotMap {
 
         intakeTop.set(ControlMode.PercentOutput, 0.0);
 
-        intakeBot.follow(intakeTop);
+        intakeBot.set(ControlMode.PercentOutput, 0.0);
 
         wristControl.set(ControlMode.MotionMagic, 0.0);
         wristControl.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
         wristControl.setNeutralMode(NeutralMode.Brake);
         wristControl.setSensorPhase(true);
         wristControl.setInverted(false);
-        wristControl.config_kP(0, 0.1, 10);
+        
+        wristControl.config_kP(0, 0.2, 10);
         wristControl.config_kI(0, 0.00002, 10);
         wristControl.config_kD(0, 0.0, 10);
-        wristControl.config_kF(0, 0.0, 10);
+        wristControl.config_kF(0, 0.2, 10);
         wristControl.selectProfileSlot(0, 0);
+
+        wristControl.config_kP(1, 0.4, 10);
+        wristControl.config_kI(1, 0.00008, 10);
+        wristControl.config_kD(1, 0.0, 10);
+        wristControl.config_kF(1, 0.4, 10);
+
+        wristControl.config_kP(2, 0.4, 10);
+        wristControl.config_kI(2, 0.00008, 10);
+        wristControl.config_kD(2, 0.0, 10);
+        wristControl.config_kF(2, 0.0, 10);
     }
 
     public static void resetSensors() {
@@ -122,7 +133,7 @@ public class RobotMap {
         driveLeftTop.setSelectedSensorPosition(0);
         driveRightTop.setSelectedSensorPosition(0);
         wristControl.setSelectedSensorPosition(0);
-        elevatorBot.setSelectedSensorPosition(0);
+        elevatorTop.setSelectedSensorPosition(0);
         pdp.clearStickyFaults();
     }
 

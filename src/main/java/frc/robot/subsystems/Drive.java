@@ -32,7 +32,7 @@ public class Drive extends Subsystem {
       }
 
       protected void execute() {
-        double straight = OI.getStraight(), steering = OI.getSteering();
+        double straight = OI.getPrimaryLeftYAxis(), steering = OI.getPrimaryRightXAxis();
         driveLR(-straight - steering, straight - steering);
 
         if(OI.getPrimaryRB()) RobotMap.driveShifter.set(false); // low gear

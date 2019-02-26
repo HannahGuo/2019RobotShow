@@ -21,6 +21,8 @@ public class Elevator extends Subsystem {
   private static ElevatorState lastState = ElevatorState.MANUAL;
   private static boolean elevatorZeroed = false;
   private static boolean wristZeroed = false;
+  private static boolean holdGroundMode = false;
+  private static boolean holdWristUpMode = false;
 
   public static Elevator getInstance() {
     return instance == null ? instance = new Elevator() : instance;
@@ -35,11 +37,11 @@ public class Elevator extends Subsystem {
     // Elevator Height, Vel, Accel, Claw, Angle
     // All of these units are in native encoder units (4096units/1rev)
     MANUAL(0, 0, 0, 0),
-    ZERO(0, 0, 0, 0),
-    HOLD(0, 0, 0, 5200),
-    INTAKEBALL(0, 0, 0, 0),
-    INTAKEHATCH(0, 0, 0, 0),
-    HATCH1(-6766, 0, 0, 0),
+    ZERO(-100, 6000, 8000, 4115),
+    HOLD(-3500, 6000, 8000, 920),
+    INTAKEBALL(-6025, 6000, 8000, 5240),
+    INTAKEHATCH(-6025, 6000, 8000, 5240),
+    HATCH1(-12000, 6000, 8000, 4115),
     HATCH2(-46450, 0, 0, 0),
     HATCH3(-85850, 0, 0, 0),
     BALL1(-22500, 10000, 20000, 0),
@@ -104,24 +106,19 @@ public class Elevator extends Subsystem {
       }
 
       protected void execute() {
-        // if (OI.getPrimaryA()) elevatorState = ElevatorState.BALL1;
-        // else if(OI.getPrimaryB()) elevatorState = ElevatorState.BALL2;
-        // else if(OI.getPrimaryX()) elevatorState = ElevatorState.BALL3;
-        // else if(OI.getPrimaryStart()) elevatorState = ElevatorState.MANUAL;
-        // else if (OI.getPrimaryX()) {
-        //   RobotMap.elevatorBot.config_kP(0, SmartDashboard.getNumber("EUP", 0.8), 10);
-        //   RobotMap.elevatorBot.config_kI(0, SmartDashboard.getNumber("EUI", 0.0), 10);
-        //   RobotMap.elevatorBot.config_kD(0, SmartDashboard.getNumber("EUP", 0.0), 10);
-        //   RobotMap.elevatorBot.config_kF(0, SmartDashboard.getNumber("EUF", 0.02), 10);
-        //   RobotMap.elevatorBot.selectProfileSlot(0, 0);
-        // }
+        if (OI.getPrimaryA()) elevatorState = ElevatorState.HATCH1;
+        else if(OI.getPrimaryB()) elevatorState = ElevatorState.ZERO;
+        else if(OI.getPrimaryX()) elevatorState = ElevatorState.BALL3;
+        else if(OI.getPrimaryStart()) elevatorState = ElevatorState.HOLD;
+        else if(OI.getPrimaryY()) elevatorState = ElevatorState.INTAKEHATCH;
 
         if(!elevatorZeroed) {
           if(isElevatorButtonPressed()) {
             RobotMap.elevatorTop.getSensorCollection().setQuadraturePosition(0, 10);
             elevatorZeroed = true;
+          } else {
+            System.out.println("Please zero the elevator!");
           }
-          System.out.println("Please zero the elevator!");
         }
 
         if(!wristZeroed) {
@@ -133,26 +130,55 @@ public class Elevator extends Subsystem {
           }
         }
         
-        if(OI.getPrimaryY()) {
-          System.out.println("WRIST CONTROL " + RobotMap.wristControl.getSelectedSensorPosition());
-          elevatorState = ElevatorState.TESTING;
-        }
-        
-        if(elevatorState == ElevatorState.TESTING) {
-          RobotMap.wristControl.configMotionCruiseVelocity(500);
-          RobotMap.wristControl.configMotionAcceleration(1500);
-          RobotMap.wristControl.set(ControlMode.MotionMagic, 5200);
-        } else if(elevatorState == ElevatorState.MANUAL) {
-          RobotMap.elevatorTop.set(ControlMode.PercentOutput, OI.getSecondaryA1());
+        if(elevatorState == ElevatorState.INTAKEHATCH) {
+          RobotMap.elevatorTop.configMotionCruiseVelocity(elevatorState.getVel(), 10);
+          RobotMap.elevatorTop.configMotionAcceleration(elevatorState.getAccel(), 10);
+          RobotMap.elevatorTop.set(ControlMode.MotionMagic, elevatorState.getElevatorHeight()); 
+          
+          if(elevatorState.getClawPosition() - 100 <= RobotMap.wristControl.getSelectedSensorPosition() && 
+              RobotMap.wristControl.getSelectedSensorPosition() <= elevatorState.getClawPosition() + 100)
+                holdGroundMode = true;
 
-          if(isWristButtonPressed() && OI.getPrimaryA3() <= 0) RobotMap.wristControl.set(ControlMode.PercentOutput, 0);
-          else RobotMap.wristControl.set(ControlMode.PercentOutput, OI.getPrimaryA3());
+          if(!holdGroundMode) {
+            RobotMap.wristControl.configMotionCruiseVelocity(2000);
+            RobotMap.wristControl.configMotionAcceleration(200000);
+            RobotMap.wristControl.set(ControlMode.MotionMagic, elevatorState.getClawPosition());
+          } else {
+            RobotMap.wristControl.set(ControlMode.Current, 0.5);
+          }
+
+          RobotMap.intakeBot.set(ControlMode.PercentOutput, 0.5);
+        } else if(elevatorState == ElevatorState.MANUAL) {
+          // RobotMap.elevatorTop.set(ControlMode.PercentOutput, OI.getSecondaryA1());
+
+          if(isWristButtonPressed() && OI.getPrimaryRightYAxis() <= 0) RobotMap.wristControl.set(ControlMode.PercentOutput, 0);
+          else RobotMap.wristControl.set(ControlMode.PercentOutput, OI.getPrimaryRightYAxis() * 0.3);
         
         } else {
+          if(lastState != elevatorState) {
+            if(lastState.clawPosition <= elevatorState.clawPosition) RobotMap.wristControl.selectProfileSlot(0, 0);
+            else RobotMap.wristControl.selectProfileSlot(1, 0);
+          }
+          
+          if((elevatorState == ElevatorState.HOLD  || elevatorState == ElevatorState.HATCH1) && (elevatorState.getClawPosition() - 100 <= RobotMap.wristControl.getSelectedSensorPosition() && 
+          RobotMap.wristControl.getSelectedSensorPosition() <= elevatorState.getClawPosition() + 100)) {
+            holdWristUpMode = true;
+            RobotMap.wristControl.selectProfileSlot(2, 0);
+            RobotMap.wristControl.set(ControlMode.Position, elevatorState.getClawPosition());
+          } else {
+            RobotMap.wristControl.configMotionCruiseVelocity(2000);
+            RobotMap.wristControl.configMotionAcceleration(200000);
+            RobotMap.wristControl.set(ControlMode.MotionMagic, elevatorState.getClawPosition());
+            RobotMap.intakeBot.set(ControlMode.PercentOutput, 0.0);
+          }
+            
+          RobotMap.traumatizedGhosts.set(holdWristUpMode);
+
           RobotMap.elevatorTop.configMotionCruiseVelocity(elevatorState.getVel(), 10);
           RobotMap.elevatorTop.configMotionAcceleration(elevatorState.getAccel(), 10);
           RobotMap.elevatorTop.set(ControlMode.MotionMagic, elevatorState.getElevatorHeight());    
         }  
+        lastState = elevatorState;
       }
 
       protected boolean isFinished() {
@@ -171,11 +197,13 @@ public class Elevator extends Subsystem {
   }
 
   public static void stopMoving() {
-    elevatorState = ElevatorState.MANUAL;
     RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0.0);
-    RobotMap.elevatorBot.set(ControlMode.PercentOutput, 0.0);
+    RobotMap.traumatizedGhosts.set(false);
+    elevatorState = ElevatorState.MANUAL;
     elevatorZeroed = false;
     wristZeroed = false;
+    holdGroundMode = false;
+    holdWristUpMode = false;
   }
 
   private static boolean isElevatorButtonPressed() {

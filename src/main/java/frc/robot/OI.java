@@ -11,25 +11,37 @@ public class OI {
         return instance == null ? instance = new OI() : instance;
     }
 
-    public static double getStraight() {
+    public static double getPrimaryLeftXAxis(){
+        return primary.getRawAxis(0);
+    }
+
+    public static double getPrimaryLeftYAxis() {
         return primary.getRawAxis(1);
-    } //LeftStickYAxis
+    }
 
-    public static double getSteering() {
+    public static double getPrimaryRightXAxis() {
         return primary.getRawAxis(2);
-    } //RightStickXAxis
+    }
 
-    public static double getPrimaryA3(){
+    public static double getPrimaryRightYAxis(){
         return primary.getRawAxis(3);
     }
 
-    public static double getSecondaryA1() {
-        return secondary.getRawAxis(1);
-    } //LeftStickYAxis
+    public static double getSecondaryLeftXAxis(){
+        return secondary.getRawAxis(0);
+    }
 
-    public static double getSecondaryA3() {
+    public static double getSecondaryLeftYAxis() {
+        return secondary.getRawAxis(1);
+    }
+
+    public static double getSecondaryRightXAxis() {
+        return secondary.getRawAxis(2);
+    }
+
+    public static double getSecondaryRightYAxis(){
         return secondary.getRawAxis(3);
-    } //RightStickYAxis
+    }
 
     static boolean getPrimaryAPressed() {
         return primary.getRawButtonPressed(2);
