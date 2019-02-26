@@ -121,11 +121,6 @@ public class RobotMap {
         wristControl.config_kI(1, 0.00008, 10);
         wristControl.config_kD(1, 0.0, 10);
         wristControl.config_kF(1, 0.4, 10);
-
-        wristControl.config_kP(2, 0.4, 10);
-        wristControl.config_kI(2, 0.00008, 10);
-        wristControl.config_kD(2, 0.0, 10);
-        wristControl.config_kF(2, 0.0, 10);
     }
 
     public static void resetSensors() {
