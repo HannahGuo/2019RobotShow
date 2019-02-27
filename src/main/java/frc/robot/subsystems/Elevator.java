@@ -50,8 +50,8 @@ public class Elevator extends Subsystem {
     HATCH2(-46450, 0, 0, 0, 0, 0),
     HATCH3(-85850, 0, 0, 0, 0, 0),
     BALL1(-22500, 10000, 20000, 4115, 0, 0),
-    BALL2(-65200, 20000, 25000, 0, 0, 0),
-    BALL3(-95448, 20000, 10000, 3700, 0, 0),
+    BALL2(-65200, 20000, 25000, 4115, 0, 0),
+    BALL3(-96948, 20000, 10000, 3700, 0, 0),
     TESTING(0, 0, 0, 0, 0, 0);
 
     private final int elevatorHeight;
@@ -142,11 +142,11 @@ public class Elevator extends Subsystem {
         //
 
         if (OI.getPrimaryB()) elevatorState = ElevatorState.OUTTAKEBALL;
-        else if(OI.getPrimaryA()) elevatorState = ElevatorState.ZERO;
+        else if(OI.getPrimaryA()) elevatorState = ElevatorState.BALL1;
         // else if(OI.getSecondaryA()) elevatorState 
         else if(OI.getPrimaryX()) elevatorState = ElevatorState.BALL3;
-        else if(OI.getPrimaryStart()) elevatorState = ElevatorState.MANUAL;
-        else if(OI.getPrimaryY()) elevatorState = ElevatorState.INTAKEBALL;
+        else if(OI.getPrimaryStart()) elevatorState = ElevatorState.HOLD;
+        else if(OI.getPrimaryY()) elevatorState = ElevatorState.BALL2;
 
         if(!elevatorZeroed) {
           if(isElevatorButtonPressed()) {
