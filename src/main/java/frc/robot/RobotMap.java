@@ -31,7 +31,7 @@ public class RobotMap {
 
     public static final DigitalInput zeroThyElevator = new DigitalInput(0); // False = Pressed
     public static final DigitalInput zeroThyWrist = new DigitalInput(1); // False = Pressed
-    public static final DigitalInput lightSensor = new DigitalInput(9);
+    public static final DigitalInput forbiddenOrange = new DigitalInput(9); // False = Thing detected
     public static final PowerDistributionPanel pdp = new PowerDistributionPanel();
     
     public static final ADXRS453Gyro gyroSPI = new ADXRS453Gyro(); //Counter-clockwise (Left) = negative, clockwise (Right) = positive
@@ -111,16 +111,18 @@ public class RobotMap {
         wristControl.setSensorPhase(true);
         wristControl.setInverted(false);
         
-        wristControl.config_kP(0, 0.2, 10);
-        wristControl.config_kI(0, 0.00002, 10);
+        // Wrist going down
+        wristControl.config_kP(0, 1.6, 10);
+        wristControl.config_kI(0, 0.00016, 10);
         wristControl.config_kD(0, 0.0, 10);
         wristControl.config_kF(0, 0.2, 10);
         wristControl.selectProfileSlot(0, 0);
 
-        wristControl.config_kP(1, 0.4, 10);
-        wristControl.config_kI(1, 0.00008, 10);
+        // Wrist going up
+        wristControl.config_kP(1, 1.6, 10);
+        wristControl.config_kI(1, 0.00016, 10);
         wristControl.config_kD(1, 0.0, 10);
-        wristControl.config_kF(1, 0.4, 10);
+        wristControl.config_kF(1, 0.2, 10);
     }
 
     public static void resetSensors() {
