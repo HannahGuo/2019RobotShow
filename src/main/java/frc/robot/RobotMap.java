@@ -31,6 +31,7 @@ public class RobotMap {
 
     public static final DigitalInput zeroThyElevator = new DigitalInput(0); // False = Pressed
     public static final DigitalInput zeroThyWrist = new DigitalInput(1); // False = Pressed
+    public static final DigitalInput hatchDetector = new DigitalInput(8); // False = Thing detected
     public static final DigitalInput forbiddenOrange = new DigitalInput(9); // False = Thing detected
     public static final PowerDistributionPanel pdp = new PowerDistributionPanel();
     
@@ -90,12 +91,22 @@ public class RobotMap {
         elevatorTop.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
         elevatorTop.setSensorPhase(false);
         elevatorTop.setInverted(false);
+
+        // Elevator going up
         elevatorTop.config_kP(0, 1.1, 10);
         elevatorTop.config_kI(0, 0.00025, 10);
         elevatorTop.config_kD(0, 0.0, 10);
         elevatorTop.config_kF(0, 0.25, 10);
         elevatorTop.selectProfileSlot(0, 0);
         elevatorTop.config_IntegralZone(0, 250, 10);
+
+        // Elevator going down
+        elevatorTop.config_kP(1, 1.1, 10);
+        elevatorTop.config_kI(1, 0.00025, 10);
+        elevatorTop.config_kD(1, 0.0, 10);
+        elevatorTop.config_kF(1, 0.25, 10);
+        // elevatorTop.selectProfileSlot(0, 0);
+        elevatorTop.config_IntegralZone(1, 250, 10);
 
         elevatorBot.follow(elevatorTop);
         elevatorBot.setNeutralMode(NeutralMode.Brake);
