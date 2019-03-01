@@ -31,7 +31,7 @@ public class RobotMap {
 
     public static final DigitalInput zeroThyElevator = new DigitalInput(0); // False = Pressed
     public static final DigitalInput zeroThyWrist = new DigitalInput(1); // False = Pressed
-    public static final DigitalInput hatchDetector = new DigitalInput(8); // False = Thing detected
+    public static final DigitalInput hatchDetector = new DigitalInput(5); // False = Thing detected
     public static final DigitalInput forbiddenOrange = new DigitalInput(9); // False = Thing detected
     public static final PowerDistributionPanel pdp = new PowerDistributionPanel();
     
