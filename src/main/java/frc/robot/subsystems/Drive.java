@@ -40,8 +40,8 @@ public class Drive extends Subsystem {
 
         driveLR(-straight - steering, straight - steering);
 
-        if(OI.getPrimaryRB()) RobotMap.driveShifter.set(false); // low gear
-        else if(OI.getPrimaryLB()) RobotMap.driveShifter.set(true); // high gear
+        if(OI.getPrimaryA()) RobotMap.driveShifter.set(false); // low gear
+        else if(OI.getPrimaryY()) RobotMap.driveShifter.set(true); // high gear
 
       }
 
