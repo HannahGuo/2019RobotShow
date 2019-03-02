@@ -7,7 +7,7 @@ public class OI {
     private static final Joystick secondary = new Joystick(1); //Logitech Dual Action
     private static OI instance;
 
-    static OI getInstance() {
+    public static OI getInstance() {
         return instance == null ? instance = new OI() : instance;
     }
 

@@ -33,6 +33,10 @@ public class Drive extends Subsystem {
 
       protected void execute() {
         double straight = OI.getPrimaryLeftYAxis(), steering = Math.pow(OI.getPrimaryRightXAxis(), 3);
+        
+        if(-0.1 < straight && 0.1 > straight) straight = 0.0;
+
+        if(-0.1 < steering && 0.1 > steering) steering = 0.0;
 
         driveLR(-straight - steering, straight - steering);
 

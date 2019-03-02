@@ -54,7 +54,7 @@ public class Robot extends TimedRobot {
     c.setClosedLoopControl(true);
     Scheduler.getInstance().removeAll();
     robotMap.resetSensors();
-
+  
     SmartDashboard.putNumber("EUP", 0.5);
     SmartDashboard.putNumber("EUI", 0.0);
     SmartDashboard.putNumber("EUD", 0.0);

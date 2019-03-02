@@ -4,7 +4,7 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-
+// START AT LOWEST POINT W/ GHOSTS OUT, DRIVE ELE UP TO ROCKET 1 HATCH HEIGHT, DRIVEN AWAY THINGY
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -28,7 +28,7 @@ public class Elevator extends Subsystem {
   private static final int CLAW_VEL = 700;
   private static final int CLAW_ACCEL = 900;
   private static int lowerHatch = 0;
-  private static int HATCH_OUTTAKE_CONSTANT = -10000;
+  private static int HATCH_OUTTAKE_CONSTANT = -1500;
 
   private static boolean hasIntookHatch = false;
 
@@ -135,6 +135,8 @@ public class Elevator extends Subsystem {
         // B + RIGHT BUMPER/LEFT BUMPER  = OUTTAKE LEVEL 1
         // X + RIGHT BUMPER/LEFT BUMPER = OUTTAKE LEVEL 2
         // Y + RIGHT BUMPER/LEFT BUMPER = OUTTAKE LEVEL 3
+        // LEFT BUMPER = BALL OUTTAKE ^^ 
+        // RIGHT BUMPER = HATCH OUTTAKE ^^
         // START = MANUAL
         // MANUAL + RIGHT TRIGGER = WHEELS SPIN FOR HATCH
         // MANUAL + LEFT TRIGGER = WHEELS SPIN FOR BALL
@@ -164,21 +166,15 @@ public class Elevator extends Subsystem {
           else elevatorState = ElevatorState.INTAKE;
         } else if(OI.getSecondaryDPad() != -1) {
           elevatorState = ElevatorState.HOLD;
-        }
-        else if(isHatchHeightMode() || isOrangeHeightMode()){
-          if(OI.getSecondaryLB() || OI.getSecondaryRB()) {
-            if(hasHatch) {
-              lowerHatch = HATCH_OUTTAKE_CONSTANT;
-              runHatchOuttake();
-            } else if(hasOrange) {
-              outtakeOrange = true;
-            } else if(!hasOrange){
-              outtakeOrange = false;
-            }
-          } else {
+        } else if(isHatchHeightMode() || isOrangeHeightMode()){
+          outtakeOrange = OI.getSecondaryLB();
+          
+          if(OI.getSecondaryRB()){
+            lowerHatch = HATCH_OUTTAKE_CONSTANT;
+            runHatchOuttake();
             hasHatch = false;
-          }
-        } 
+          } 
+        }
 
         if(!elevatorZeroed) {
           if(isElevatorButtonPressed()) {
@@ -219,17 +215,19 @@ public class Elevator extends Subsystem {
             RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0.2);
           }
         } else {
-          if((elevatorState == ElevatorState.HATCH1 || elevatorState == ElevatorState.HATCH2 || elevatorState == ElevatorState.HATCH3) && !hasHatchNotOrange() && !returnToHold) {
+          if((isHatchHeightMode() || isOrangeHeightMode()) && !hasHatchNotOrange() && !returnToHold) {
             returnToHold = true;
             timerHoldTime = System.currentTimeMillis();
           } else if(returnToHold && OI.getPrimaryLeftYAxis() < 0) {
             returnToHold = false;
             lowerHatch = 0;
+            extendGhosts = false;
           }
 
-          if(returnToHold && System.currentTimeMillis() - timerHoldTime >= 500) {
+          if(returnToHold && System.currentTimeMillis() - timerHoldTime >= 250) {
             elevatorState = ElevatorState.HOLD;
-            returnToHold = false;
+            returnToHold = false
+            ;
           }
 
           if((hasHatchNotOrange() && lastState == ElevatorState.INTAKEHATCH && hasIntookHatch) || (hasOrangeNotHatch() && lastState == ElevatorState.INTAKEBALL) 
@@ -238,14 +236,10 @@ public class Elevator extends Subsystem {
             hasIntookHatch = false;
           }
             
-          if((((isWithinThreshold(RobotMap.wristControl.getSelectedSensorPosition(), elevatorState.getClawPosition() - 100, 
-             elevatorState.getClawPosition() + 100) && elevatorState == ElevatorState.HOLD) || isHatchHeightMode()))) {
+          if(((((isWithinThreshold(RobotMap.wristControl.getSelectedSensorPosition(), elevatorState.getClawPosition() - 100, 
+             elevatorState.getClawPosition() + 100) && !hasOrangeNotHatch() && !hasNothing() && elevatorState == ElevatorState.HOLD) || isHatchHeightMode())))) {
             extendGhosts = true;
-          } else {
-            extendGhosts = false;
-          }
-
-          if(lowerHatch != 0){
+          } else if(lowerHatch != 0 || isIntakeMode() || hasNothing()){
             extendGhosts = false;
           }
 
@@ -278,8 +272,7 @@ public class Elevator extends Subsystem {
               runBallIntake();
             }
           } else if(elevatorState == ElevatorState.INTAKEHATCH) {
-            System.out.println("THIS DID TOO");
-            if(hasHatch && System.currentTimeMillis() - timerHatchTime >= 500) {
+            if(hasHatch && System.currentTimeMillis() - timerHatchTime >= 400) {
               // Hatch is fully in
               stopIntakeWheels();
               hasIntookHatch = true;
@@ -290,7 +283,7 @@ public class Elevator extends Subsystem {
           } else if(outtakeOrange) {
             runBallOuttake();
             hasOrange = false;
-          } else {
+          } else if(lowerHatch == 0) {
             stopIntakeWheels();
           }
 
@@ -302,23 +295,23 @@ public class Elevator extends Subsystem {
           
           RobotMap.elevatorTop.configMotionCruiseVelocity(elevatorState.getVel(), 10);
           RobotMap.elevatorTop.configMotionAcceleration(elevatorState.getAccel(), 10);
-          RobotMap.elevatorTop.set(ControlMode.MotionMagic, elevatorState.getElevatorHeight() - lowerHatch); 
+          RobotMap.elevatorTop.set(ControlMode.MotionMagic, elevatorState.getElevatorHeight()); 
 
           if(lastState != elevatorState) {
             if(lastState.clawPosition <= elevatorState.clawPosition) RobotMap.wristControl.selectProfileSlot(0, 0);
             else RobotMap.wristControl.selectProfileSlot(1, 0);
           }
           
-          if(!holdGroundMode) {
+          if(!holdGroundMode) { 
             RobotMap.wristControl.configMotionCruiseVelocity(CLAW_VEL);
             RobotMap.wristControl.configMotionAcceleration(CLAW_ACCEL);
-            RobotMap.wristControl.set(ControlMode.MotionMagic, elevatorState.getClawPosition());
+            RobotMap.wristControl.set(ControlMode.MotionMagic, elevatorState.getClawPosition() - lowerHatch);
           } else {
             RobotMap.wristControl.set(ControlMode.Current, 0.5);
           }
         }  
         lastState = elevatorState;
-        // System.out.println(elevatorState.name());
+        System.out.println(elevatorState.name());
       }
 
       protected boolean isFinished() {
@@ -394,7 +387,7 @@ public class Elevator extends Subsystem {
   }
 
   private static void runHatchOuttake(){
-    RobotMap.intakeTop.set(ControlMode.PercentOutput, 0.0);
+    RobotMap.intakeTop.set(ControlMode.PercentOutput, 1.0);
     RobotMap.intakeBot.set(ControlMode.PercentOutput, -1.0);
   }
 
@@ -416,5 +409,9 @@ public class Elevator extends Subsystem {
 
   private static boolean hasOrangeNotHatch(){
     return isForbiddenOrangeIn() && !isHatchIn();
+  }
+
+  private static boolean hasNothing(){
+    return !isForbiddenOrangeIn() && !isHatchIn();
   }
 }
