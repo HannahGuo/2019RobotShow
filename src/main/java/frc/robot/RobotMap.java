@@ -104,7 +104,7 @@ public class RobotMap {
         elevatorTop.config_kP(1, 1.1, 10);
         elevatorTop.config_kI(1, 0.00025, 10);
         elevatorTop.config_kD(1, 0.0, 10);
-        elevatorTop.config_kF(1, 0.25, 10);
+        elevatorTop.config_kF(1, 0.3, 10);
         // elevatorTop.selectProfileSlot(0, 0);
         elevatorTop.config_IntegralZone(1, 250, 10);
 
