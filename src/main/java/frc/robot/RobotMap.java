@@ -49,9 +49,9 @@ public class RobotMap {
         driveLeftTop.setNeutralMode(NeutralMode.Brake);
         driveLeftTop.configVoltageCompSaturation(12.0, 10);
         driveLeftTop.enableVoltageCompensation(true);
+        driveLeftTop.configContinuousCurrentLimit(30, 10);
         driveLeftTop.configPeakCurrentLimit(0, 10);
         driveLeftTop.configPeakCurrentDuration(0);
-        driveLeftTop.configContinuousCurrentLimit(35, 10);
         driveLeftTop.enableCurrentLimit(true);
         driveLeftTop.setInverted(true);
 
@@ -59,9 +59,9 @@ public class RobotMap {
         driveLeftBot.setNeutralMode(NeutralMode.Brake);
         driveLeftBot.configVoltageCompSaturation(12.0, 10);
         driveLeftBot.enableVoltageCompensation(true);
+        driveLeftBot.configContinuousCurrentLimit(30, 10);
         driveLeftBot.configPeakCurrentLimit(0, 10);
         driveLeftBot.configPeakCurrentDuration(0);
-        driveLeftBot.configContinuousCurrentLimit(35, 10);
         driveLeftBot.enableCurrentLimit(true);
         driveLeftBot.setInverted(true);
 
@@ -71,18 +71,19 @@ public class RobotMap {
         driveRightTop.setNeutralMode(NeutralMode.Brake);
         driveRightTop.configVoltageCompSaturation(12.0, 10);
         driveRightTop.enableVoltageCompensation(true);
+        driveRightTop.configContinuousCurrentLimit(30, 10);
         driveRightTop.configPeakCurrentLimit(0, 10);
         driveRightTop.configPeakCurrentDuration(0);
-        driveRightTop.configContinuousCurrentLimit(35, 10);
+        driveRightTop.enableCurrentLimit(true);
         driveRightTop.setInverted(true);
 
         driveRightBot.follow(driveRightTop);
         driveRightBot.setNeutralMode(NeutralMode.Brake);
         driveRightBot.configVoltageCompSaturation(12.0, 10);
         driveRightBot.enableVoltageCompensation(true);
+        driveRightBot.configContinuousCurrentLimit(30, 10);
         driveRightBot.configPeakCurrentLimit(0, 10);
         driveRightBot.configPeakCurrentDuration(0);
-        driveRightBot.configContinuousCurrentLimit(35, 10);
         driveRightBot.enableCurrentLimit(true);
         driveRightBot.setInverted(true);
         
@@ -93,20 +94,25 @@ public class RobotMap {
         elevatorTop.setInverted(false);
 
         // Elevator going up
-        elevatorTop.config_kP(0, 1.1, 10);
+        elevatorTop.config_kP(0, 0.65, 10);
         elevatorTop.config_kI(0, 0.00025, 10);
-        elevatorTop.config_kD(0, 0.0, 10);
+        elevatorTop.config_kD(0, 4.0, 10);
         elevatorTop.config_kF(0, 0.25, 10);
         elevatorTop.selectProfileSlot(0, 0);
         elevatorTop.config_IntegralZone(0, 250, 10);
 
         // Elevator going down
-        elevatorTop.config_kP(1, 1.1, 10);
+        elevatorTop.config_kP(1, 0.65, 10);
         elevatorTop.config_kI(1, 0.00025, 10);
-        elevatorTop.config_kD(1, 0.0, 10);
-        elevatorTop.config_kF(1, 0.3, 10);
-        // elevatorTop.selectProfileSlot(0, 0);
+        elevatorTop.config_kD(1, 4.0, 10);
+        elevatorTop.config_kF(1, 0.25, 10);
         elevatorTop.config_IntegralZone(1, 250, 10);
+        // // Elevator going down
+        // elevatorTop.config_kP(1, 0.65, 10);
+        // elevatorTop.config_kI(1, 0.00025, 10);
+        // elevatorTop.config_kD(1, 0.0, 10);
+        // elevatorTop.config_kF(1, 0.3, 10);
+        // elevatorTop.config_IntegralZone(1, 250, 10);
 
         elevatorBot.follow(elevatorTop);
         elevatorBot.setNeutralMode(NeutralMode.Brake);
