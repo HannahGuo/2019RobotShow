@@ -42,7 +42,6 @@ public class Drive extends Subsystem {
 
         if(OI.getPrimaryA()) RobotMap.driveShifter.set(false); // low gear
         else if(OI.getPrimaryY()) RobotMap.driveShifter.set(true); // high gear
-
       }
 
       protected boolean isFinished() {
