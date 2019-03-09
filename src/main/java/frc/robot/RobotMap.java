@@ -51,7 +51,7 @@ public class RobotMap {
         driveLeftTop.enableVoltageCompensation(true);
         driveLeftTop.configContinuousCurrentLimit(30, 10);
         driveLeftTop.configPeakCurrentLimit(0, 10);
-        driveLeftTop.configPeakCurrentDuration(0);
+        driveLeftTop.configPeakCurrentDuration(0, 10);
         driveLeftTop.enableCurrentLimit(true);
         driveLeftTop.setInverted(true);
 
@@ -61,7 +61,7 @@ public class RobotMap {
         driveLeftBot.enableVoltageCompensation(true);
         driveLeftBot.configContinuousCurrentLimit(30, 10);
         driveLeftBot.configPeakCurrentLimit(0, 10);
-        driveLeftBot.configPeakCurrentDuration(0);
+        driveLeftBot.configPeakCurrentDuration(0, 10);
         driveLeftBot.enableCurrentLimit(true);
         driveLeftBot.setInverted(true);
 
@@ -73,7 +73,7 @@ public class RobotMap {
         driveRightTop.enableVoltageCompensation(true);
         driveRightTop.configContinuousCurrentLimit(30, 10);
         driveRightTop.configPeakCurrentLimit(0, 10);
-        driveRightTop.configPeakCurrentDuration(0);
+        driveRightTop.configPeakCurrentDuration(0, 10);
         driveRightTop.enableCurrentLimit(true);
         driveRightTop.setInverted(true);
 
@@ -83,7 +83,7 @@ public class RobotMap {
         driveRightBot.enableVoltageCompensation(true);
         driveRightBot.configContinuousCurrentLimit(30, 10);
         driveRightBot.configPeakCurrentLimit(0, 10);
-        driveRightBot.configPeakCurrentDuration(0);
+        driveRightBot.configPeakCurrentDuration(0, 10);
         driveRightBot.enableCurrentLimit(true);
         driveRightBot.setInverted(true);
         

@@ -32,13 +32,15 @@ public class Drive extends Subsystem {
       }
 
       protected void execute() {
-        double straight = OI.getPrimaryLeftYAxis(), steering = Math.pow(OI.getPrimaryRightXAxis(), 3);
+        double straight = OI.getPrimaryLeftYAxis(), steering = Math.pow(OI.getPrimaryRightXAxis(), 3), 
+               multiplier = OI.getPrimaryLB() ? 0.3 : 1.0;
         
         if(-0.1 < straight && 0.1 > straight) straight = 0.0;
-
         if(-0.1 < steering && 0.1 > steering) steering = 0.0;
 
-        driveLR(-straight - steering, straight - steering);
+        double left = multiplier * (-straight - steering);
+        double right = multiplier * (straight - steering);
+        driveLR(left, right);
 
         if(OI.getPrimaryA()) RobotMap.driveShifter.set(false); // low gear
         else if(OI.getPrimaryY()) RobotMap.driveShifter.set(true); // high gear
