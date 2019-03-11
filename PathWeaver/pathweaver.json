@@ -1,0 +1,10 @@
+{
+  "lengthUnit": "Millimeter",
+  "timeStep": 0.02,
+  "maxVelocity": 4572.0,
+  "maxAcceleration": 4572.0,
+  "maxJerk": 1000.0,
+  "wheelBase": 1325.0,
+  "gameName": "Destination: Deep Space",
+  "outputDir": "../src/main/java/frc/robot/path"
+}
