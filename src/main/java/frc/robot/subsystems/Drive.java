@@ -57,9 +57,14 @@ public class Drive extends Subsystem {
     });
   }
 
-  public static void driveLR(double left, double right) {
+  public void driveLR(double left, double right) {
     RobotMap.driveLeftTop.set(ControlMode.PercentOutput, left);
     RobotMap.driveRightTop.set(ControlMode.PercentOutput, right);
+  }
+
+  public void resetDriveEncoders(){
+    RobotMap.driveLeftTop.setSelectedSensorPosition(0);
+    RobotMap.driveRightTop.setSelectedSensorPosition(0);
   }
   
   public static void stopMoving() {

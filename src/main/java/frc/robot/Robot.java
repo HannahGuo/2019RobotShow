@@ -23,14 +23,16 @@ public class Robot extends TimedRobot {
   private Elevator elevator = Elevator.getInstance();
   private OI oi = OI.getInstance();
   private Compressor c = new Compressor(0);
+  private LimelightVision limelightVision = new LimelightVision();
 
   @Override
   public void robotInit() {
-    // robotMap.checkTalonVersions();
   }
 
   @Override
   public void robotPeriodic() {
+    limelightVision.updateVision();
+    limelightVision.outputVisionInfo();
   }
 
   @Override
@@ -58,7 +60,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-    // System.out.println(RobotMap.pdp.getVoltage() + " <-- Voltage");
+    
   }
 
   @Override
