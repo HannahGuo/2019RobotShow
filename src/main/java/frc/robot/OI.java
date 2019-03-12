@@ -1,10 +1,14 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.buttons.Button;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.auto.commands.PathfinderDrive;
+import frc.robot.auto.commands.SimpleTurn;
 
 public class OI {
-    private static final Joystick primary = new Joystick(0); //Logitech Dual Action
-    private static final Joystick secondary = new Joystick(1); //Logitech Dual Action
+    public static final Joystick primary = new Joystick(0); //Logitech Dual Action
+    public static final Joystick secondary = new Joystick(1); //Logitech Dual Action
     private static OI instance;
 
     public static OI getInstance() {

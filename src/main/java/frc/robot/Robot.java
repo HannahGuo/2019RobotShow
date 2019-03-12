@@ -7,10 +7,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
 
@@ -18,12 +20,12 @@ public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  private Drive drive = Drive.getInstance();
+  private static Drive drive = Drive.getInstance();
   private RobotMap robotMap = RobotMap.getInstance();
   private Elevator elevator = Elevator.getInstance();
   private OI oi = OI.getInstance();
   private Compressor c = new Compressor(0);
-  private LimelightVision limelightVision = new LimelightVision();
+  private LimelightVision limelightVision = LimelightVision.getInstance();
 
   @Override
   public void robotInit() {
@@ -32,7 +34,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     limelightVision.updateVision();
-    limelightVision.outputVisionInfo();
+    limelightVision.getTargets();
   }
 
   @Override
@@ -60,7 +62,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-    
+    SmartDashboard.putNumber("GYRO ANGLE", RobotMap.gyroSPI.getAbsoluteAngle());
+    // limelightVision.visionCalc();
   }
 
   @Override

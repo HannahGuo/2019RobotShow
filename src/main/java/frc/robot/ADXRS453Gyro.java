@@ -86,6 +86,10 @@ public class ADXRS453Gyro {
 		relativeAngle = 0.0;
 	}
 
+	public void setAbsoluteAngleGyro(double angle){
+		absoluteAngle = angle;
+	}
+
 	public void resetRelative() {
 		relativeAngle = 0.0;
 	}

@@ -10,12 +10,15 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import frc.robot.Constants;
+import frc.robot.LimelightVision;
 import frc.robot.OI;
 import frc.robot.RobotMap;
 
 public class Drive extends Subsystem {
   private static Drive instance;
-
+  private LimelightVision limelightVision = LimelightVision.getInstance();
+  private boolean gyroReset = false;
   public static Drive getInstance() {
     return instance == null ? instance = new Drive() : instance;
   }
@@ -35,12 +38,27 @@ public class Drive extends Subsystem {
         double straight = OI.getPrimaryLeftYAxis(), steering = Math.pow(OI.getPrimaryRightXAxis(), 3), 
                multiplier = OI.getPrimaryLB() ? 0.3 : 1.0;
         
-        if(-0.1 < straight && 0.1 > straight) straight = 0.0;
-        if(-0.1 < steering && 0.1 > steering) steering = 0.0;
+        if(OI.getPrimaryRB()){
+          if(!gyroReset){
+            RobotMap.gyroSPI.setAbsoluteAngleGyro(-limelightVision.getHorizontalOffset());
+            gyroReset = true;
+          }
+          limelightVision.updateVision();
+          double angleError = RobotMap.gyroSPI.getAbsoluteAngle();
+          steering = angleError * Constants.angP;  
+          System.out.println(angleError + " " + angleError * Constants.getAngleP());
+          double left = multiplier * (-straight + steering);
+          double right = multiplier * (straight + steering);
+          driveLR(left, right);
+        } else {
+          gyroReset = false;
+          if(-0.1 < straight && 0.1 > straight) straight = 0.0;
+          if(-0.1 < steering && 0.1 > steering) steering = 0.0;
+          double left = multiplier * (-straight - steering);
+          double right = multiplier * (straight - steering);
+          driveLR(left, right);
 
-        double left = multiplier * (-straight - steering);
-        double right = multiplier * (straight - steering);
-        driveLR(left, right);
+        }
 
         if(OI.getPrimaryA()) RobotMap.driveShifter.set(false); // low gear
         else if(OI.getPrimaryY()) RobotMap.driveShifter.set(true); // high gear
