@@ -11,7 +11,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
 import frc.robot.OI;
 import frc.robot.ParadoxTimer;
 import frc.robot.RobotMap;
@@ -31,8 +30,6 @@ public class Elevator extends Subsystem {
   private static boolean holdGroundMode = false;
   private static boolean humanHatchMode = false;
   private static boolean hasHatchFromHuman = false;
-  private static boolean hasIntookHatch = false;
-  private static boolean hasSeenOrange = false;
 
   private static boolean beastEle = false;
   private static boolean beastWrist = false;
@@ -148,37 +145,41 @@ public class Elevator extends Subsystem {
 
       protected void execute() {
          // SECONDARY CONTROLS
-        // A = GROUND
-        // B = LEVEL 1
-        // X = LEVEL 2
-        // Y = LEVEL 3
+        // A = GROUND (NO MOVING WHEELS)
+        // B = LEVEL 1 (HATCH/BALL)
+        // X = LEVEL 2 (HATCH/BALL)
+        // Y = LEVEL 3 (HATCH/BALL)
         // A + RIGHT TRIGGER = GROUND HATCH INTAKE
-        // B + RIGHT TRIGGER =  HUMAN PLAYER STATION INTAKE
-        // B + RIGHT BUMPER/LEFT BUMPER  = OUTTAKE LEVEL 1
-        // X + RIGHT BUMPER/LEFT BUMPER = OUTTAKE LEVEL 2
-        // Y + RIGHT BUMPER/LEFT BUMPER = OUTTAKE LEVEL 3
-        // LEFT BUMPER = BALL OUTTAKE ^^ 
-        // RIGHT BUMPER = HATCH OUTTAKE ^^
+        // A + LEFT TRIGGER = GROUND BALL INTAKE
+        // B + RIGHT TRIGGER =  HUMAN PLAYER STATION INTAKE (RELEASE TRIGGER FOR STAGE 2)
+        // B + RIGHT BUMPER = CARGO BALL
         // START = MANUAL
         // MANUAL + RIGHT TRIGGER = WHEELS SPIN FOR HATCH
         // MANUAL + LEFT TRIGGER = WHEELS SPIN FOR BALL
-        // A + LEFT TRIGGER = GROUND BALL INTAKE
-        // B + LEFT TRIGGER = HUMAN PLAYER STATION HATCH INTAKE
         // BACK = ZERO ELEVATOR
-        // PRIMARY B -- > BEAST MODE
+        // DPAD = HOLD MODE
+        // 
+        // PRIMARY CONTROLS
+        // LEFT TRIGGER = BALL OUTTAKE ^^ 
+        // RIGHT TRIGGER = HATCH OUTTAKE ^^
+        // RIGHT BUMPER = VISION MODE FOR DRIVE
+        // PRIMARY A + Y = DRIVE SHIFTERS
+        // DPAD? --> BEAST MODE
 
-        if (OI.getPrimaryB() && elevatorState != ElevatorState.BEAST) { 
+        if (OI.getPrimaryStart() && elevatorState != ElevatorState.BEAST) { 
           elevatorState = ElevatorState.BEAST;
           beastToggle = true;
-          beastTimer.enableTimer();
-        } else if(OI.getPrimaryB() && !beastToggle && elevatorState == ElevatorState.BEAST && beastTimer.hasTimeHasPassed(500)) {
+        } 
+        
+        if(OI.getPrimaryStartPressed()) {
+          beastToggle = false;
+        }
+        else if(OI.getPrimaryB() && !beastToggle && elevatorState == ElevatorState.BEAST) {
           elevatorState = ElevatorState.MANUAL;
           beastEle = false;
           beastWrist = false;
           beastToggle = true;
-          beastTimer.disableTimer();
-        } else if(!OI.getPrimaryB() && beastToggle && elevatorState == ElevatorState.BEAST && beastTimer.isEnabled()){
-          beastToggle = false;
+        } else if(!OI.getPrimaryB() && beastToggle && elevatorState == ElevatorState.BEAST){
         } 
 
         if(elevatorState != ElevatorState.BEAST) {
@@ -217,6 +218,7 @@ public class Elevator extends Subsystem {
             elevatorState = ElevatorState.CARGOBALL;
           } 
           
+          // Intakes and Outtakes
           if(OI.getPrimaryRT()){          
             lowerHatch = HATCH_OUTTAKE_CONSTANT;
             runHatchOuttake();
@@ -323,27 +325,26 @@ public class Elevator extends Subsystem {
           }
 
         } else {
-          if((isHatchHeightMode() || isOrangeHeightMode()) && (hasNothing() || hasHatchFromHuman) && !holdTimer.isEnabled()) {
+          if(((isHatchHeightMode() || isOrangeHeightMode()) && hasNothing()) || (hasHatchFromHuman && elevatorState == ElevatorState.INTAKEHATCH1) && !holdTimer.isEnabled()) {
             holdTimer.enableTimer();
           } else if(holdTimer.isEnabled() && OI.getPrimaryLeftYAxis() < 0) {
             holdTimer.disableTimer();
           }
 
           if(holdTimer.hasTimeHasPassed(250) && holdTimer.isEnabled()) {
-            elevatorState = ElevatorState.HOLDDEF;
-            System.out.println("414");
+            if(elevatorState == ElevatorState.INTAKEHATCH1) {
+              elevatorState = ElevatorState.HOLDHATCH;
+            } else {
+              elevatorState = ElevatorState.HOLDDEF;
+            }
             holdTimer.disableTimer();
           }
 
           if(!(isHatchHeightMode() || isOrangeHeightMode())){
-            if((lastState == ElevatorState.INTAKEHATCH1 && isHatchIn()) || (isHatchIn() && lastState == ElevatorState.INTAKEHATCH && hasIntookHatch)){
+            if(isHatchIn() && lastState == ElevatorState.INTAKEHATCH){
               elevatorState = ElevatorState.HOLDHATCH;
-              hasIntookHatch = false;
-              humanHatchMode = false;
             } else if((isForbiddenOrangeIn() && (lastState == ElevatorState.INTAKEBALLGROUND || lastState == ElevatorState.INTAKEBALLUP))){
               elevatorState = ElevatorState.HOLDDEF;
-              System.out.println("431");
-              humanHatchMode = false;
             }
           }
 
@@ -356,7 +357,6 @@ public class Elevator extends Subsystem {
           if(elevatorState == ElevatorState.INTAKEBALLUP || elevatorState == ElevatorState.INTAKEBALLGROUND) {
             if(ballIntakeTimer.isEnabled() && ballIntakeTimer.hasTimeHasPassed(300)) {
               // Ball is fully in
-              hasSeenOrange = false;
               stopIntakeWheels();
             } else {
               runBallIntake();
@@ -365,12 +365,14 @@ public class Elevator extends Subsystem {
             if(hatchTimer.isEnabled() && hatchTimer.hasTimeHasPassed(400)) {
               // Hatch is fully in
               stopIntakeWheels();
-              hasIntookHatch = true;
             } else {
               runGroundHatchIntake();
             }
           } else if(elevatorState == ElevatorState.INTAKEHATCH1) {
             runHumanHatchIntake();
+            if(isHatchIn()){
+              hasHatchFromHuman = true;
+            }
             if(humanHatchIntakeTimer.isEnabled()) humanHatchIntakeTimer.enableTimer();
           } else if(lowerHatch == 0 || isHoldMode()) {
             stopIntakeWheels();
@@ -381,8 +383,7 @@ public class Elevator extends Subsystem {
             hatchTimer.disableTimer();
           }
 
-          if(hasSeenOrange && elevatorState != ElevatorState.INTAKEBALLUP && elevatorState != ElevatorState.INTAKEBALLGROUND) hasSeenOrange = false;
-
+          if(elevatorState != ElevatorState.INTAKEHATCH1 && elevatorState != ElevatorState.INTAKEHUMANHATCH) humanHatchMode = false;
           // if(Constants.testingMode) elevatorState = ElevatorState.MANUAL;
 
           if(!isHoldMode()){
@@ -446,7 +447,6 @@ public class Elevator extends Subsystem {
     elevatorZeroed = false;
     wristZeroed = false;
     holdGroundMode = false;
-    hasSeenOrange = false;
   }
 
   private static boolean isElevatorButtonPressed() {

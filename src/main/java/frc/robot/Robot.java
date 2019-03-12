@@ -29,12 +29,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
+    CameraServer.getInstance().startAutomaticCapture();
   }
 
   @Override
   public void robotPeriodic() {
     limelightVision.updateVision();
-    limelightVision.getTargets();
   }
 
   @Override

@@ -1,10 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.buttons.Button;
-import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import frc.robot.auto.commands.PathfinderDrive;
-import frc.robot.auto.commands.SimpleTurn;
 
 public class OI {
     public static final Joystick primary = new Joystick(0); //Logitech Dual Action
@@ -15,6 +11,7 @@ public class OI {
         return instance == null ? instance = new OI() : instance;
     }
 
+    // PRIMARY
     public static double getPrimaryLeftXAxis(){
         return primary.getRawAxis(0);
     }
@@ -29,22 +26,6 @@ public class OI {
 
     public static double getPrimaryRightYAxis(){
         return primary.getRawAxis(3);
-    }
-
-    public static double getSecondaryLeftXAxis(){
-        return secondary.getRawAxis(0);
-    }
-
-    public static double getSecondaryLeftYAxis() {
-        return secondary.getRawAxis(1);
-    }
-
-    public static double getSecondaryRightXAxis() {
-        return secondary.getRawAxis(2);
-    }
-
-    public static double getSecondaryRightYAxis(){
-        return secondary.getRawAxis(3);
     }
 
     static boolean getPrimaryAPressed() {
@@ -89,6 +70,32 @@ public class OI {
 
     public static boolean getPrimaryStart() {
         return primary.getRawButton(10);
+    }
+
+    public static boolean getPrimaryStartPressed() {
+        return primary.getRawButtonPressed(10);
+    }
+
+    public static int getPrimaryDPad() {
+        return primary.getPOV(0);
+    }
+
+
+    // SECONDARY
+    public static double getSecondaryLeftXAxis(){
+        return secondary.getRawAxis(0);
+    }
+
+    public static double getSecondaryLeftYAxis() {
+        return secondary.getRawAxis(1);
+    }
+
+    public static double getSecondaryRightXAxis() {
+        return secondary.getRawAxis(2);
+    }
+
+    public static double getSecondaryRightYAxis(){
+        return secondary.getRawAxis(3);
     }
 
     public static boolean getSecondaryA() {
