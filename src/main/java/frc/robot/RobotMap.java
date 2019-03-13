@@ -18,8 +18,8 @@ public class RobotMap {
     public static final TalonSRX driveRightTop = new TalonSRX(0);
     public static final TalonSRX driveRightBot = new TalonSRX(15);
     
-    public static final TalonSRX elevatorTop = new TalonSRX(2);
-    public static final TalonSRX elevatorBot = new TalonSRX(3);
+    public static final TalonSRX elevatorTop = new TalonSRX(3);
+    public static final TalonSRX elevatorBot = new TalonSRX(2);
 
     public static final TalonSRX intakeTop = new TalonSRX(8);
     public static final TalonSRX intakeBot = new TalonSRX(11);
@@ -59,8 +59,8 @@ public class RobotMap {
         driveLeftBot.setNeutralMode(NeutralMode.Brake);
         driveLeftBot.configVoltageCompSaturation(12.0, 10);
         driveLeftBot.enableVoltageCompensation(true);
-        driveLeftBot.configContinuousCurrentLimit(25, 10);
-        driveLeftBot.configPeakCurrentLimit(25, 10);
+        driveLeftBot.configContinuousCurrentLimit(28, 10);
+        driveLeftBot.configPeakCurrentLimit(28, 10);
         driveLeftBot.configPeakCurrentDuration(0, 10);
         driveLeftBot.enableCurrentLimit(true);
         driveLeftBot.setInverted(true);
@@ -71,8 +71,8 @@ public class RobotMap {
         driveRightTop.setNeutralMode(NeutralMode.Brake);
         driveRightTop.configVoltageCompSaturation(12.0, 10);
         driveRightTop.enableVoltageCompensation(true);
-        driveRightTop.configContinuousCurrentLimit(25, 10);
-        driveRightTop.configPeakCurrentLimit(25, 10);
+        driveRightTop.configContinuousCurrentLimit(28, 10);
+        driveRightTop.configPeakCurrentLimit(28, 10);
         driveRightTop.configPeakCurrentDuration(0, 10);
         driveRightTop.enableCurrentLimit(true);
         driveRightTop.setInverted(true);
@@ -81,8 +81,8 @@ public class RobotMap {
         driveRightBot.setNeutralMode(NeutralMode.Brake);
         driveRightBot.configVoltageCompSaturation(12.0, 10);
         driveRightBot.enableVoltageCompensation(true);
-        driveRightBot.configContinuousCurrentLimit(25, 10);
-        driveRightBot.configPeakCurrentLimit(25, 10);
+        driveRightBot.configContinuousCurrentLimit(28, 10);
+        driveRightBot.configPeakCurrentLimit(28, 10);
         driveRightBot.configPeakCurrentDuration(0, 10);
         driveRightBot.enableCurrentLimit(true);
         driveRightBot.setInverted(true);
@@ -108,9 +108,10 @@ public class RobotMap {
         // elevatorTop.config_kF(1, 0.3, 10);
         // elevatorTop.config_IntegralZone(1, 250, 10);
 
-        elevatorBot.follow(elevatorTop);
-        elevatorBot.setNeutralMode(NeutralMode.Brake);
-        elevatorBot.setInverted(InvertType.FollowMaster);
+        elevatorBot.set(ControlMode.PercentOutput, 0.0);
+        // elevatorBot.follow(elevatorTop);
+        // elevatorBot.setNeutralMode(NeutralMode.Brake);
+        // elevatorBot.setInverted(InvertType.FollowMaster);
 
         intakeTop.set(ControlMode.PercentOutput, 0.0);
 
@@ -146,7 +147,7 @@ public class RobotMap {
     }
 
     public static void getElevatorOutputs() {
-        System.out.println("Elevator Outputs:" + elevatorBot.getSelectedSensorPosition());
+        System.out.println("Elevator Outputs:" + elevatorTop.getSelectedSensorPosition());
     }
 
     public static void getEncoderOutputs() {

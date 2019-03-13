@@ -10,15 +10,17 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.LimelightVision;
 import frc.robot.OI;
+import frc.robot.ParadoxTimer;
 import frc.robot.RobotMap;
 
 public class Drive extends Subsystem {
   private static Drive instance;
   private LimelightVision limelightVision = LimelightVision.getInstance();
-  private boolean gyroReset = false;
+  private ParadoxTimer visionToggle = new ParadoxTimer();
   public static Drive getInstance() {
     return instance == null ? instance = new Drive() : instance;
   }
@@ -36,25 +38,31 @@ public class Drive extends Subsystem {
 
       protected void execute() {
         double straight = OI.getPrimaryLeftYAxis(), steering = Math.pow(OI.getPrimaryRightXAxis(), 3), 
-               multiplier = OI.getPrimaryLB() ? 0.3 : 1.0;
+               multiplier = OI.getPrimaryLB() ? 0.3 : 1.0, left, right;
         
-        if(OI.getPrimaryRB()){
-          if(!gyroReset){
-            RobotMap.gyroSPI.setAbsoluteAngleGyro(-limelightVision.getHorizontalOffset());
-            gyroReset = true;
-          }
-          limelightVision.updateVision();
-          double angleError = RobotMap.gyroSPI.getAbsoluteAngle();
-          steering = angleError * Constants.angP;  
-          System.out.println(angleError + " " + angleError * Constants.getAngleP());
+        if(OI.getPrimaryRB()) {
+          limelightVision.setCamMode(0);
+          visionToggle.enableTimer(System.currentTimeMillis());
         } else {
-          gyroReset = false;
-          if(-0.1 < straight && 0.1 > straight) straight = 0.0;
-          if(-0.1 < steering && 0.1 > steering) steering = 0.0;
+          limelightVision.setCamMode(1);
         }
 
-        double left = multiplier * (-straight + steering);
-        double right = multiplier * (straight + steering);
+        if(OI.getPrimaryRB() && limelightVision.isTargetVisible() && limelightVision.getHorizontalOffset() != 0 && visionToggle.hasTimeHasPassed(400, System.currentTimeMillis())){
+          limelightVision.updateVision();
+          steering = limelightVision.getHorizontalOffset() * Constants.angP;  
+          left = multiplier * (-straight + steering);
+          right = multiplier * (straight + steering);
+          SmartDashboard.putNumber("STEERING", steering);
+        } else {
+          if(-0.1 < straight && 0.1 > straight) straight = 0.0;
+          if(-0.1 < steering && 0.1 > steering) steering = 0.0;
+          left = multiplier * (-straight - steering);
+          right = multiplier * (straight - steering);
+          visionToggle.disableTimer();
+        }
+        left = multiplier * (-straight - steering);
+        right = multiplier * (straight - steering);
+
         driveLR(left, right);
 
         if(OI.getPrimaryA()) RobotMap.driveShifter.set(false); // low gear

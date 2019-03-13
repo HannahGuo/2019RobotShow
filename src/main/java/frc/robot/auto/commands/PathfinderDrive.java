@@ -9,7 +9,6 @@ package frc.robot.auto.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Constants;
-import frc.robot.LimelightVision;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.Drive;
 import jaci.pathfinder.Pathfinder;
@@ -61,7 +60,9 @@ public class PathfinderDrive extends Command {
     double angleError = gyroHeading - desiredHeading;
 
     double steering = Constants.angP * angleError;
-    drive.driveLR(-leftStraight - steering, rightStraight - steering);
+    drive.driveLR(-leftStraight + steering, rightStraight + steering);
+
+    System.out.println(leftStraight + " " + rightStraight + " " + steering + " " + angleError);
   }
 
   @Override

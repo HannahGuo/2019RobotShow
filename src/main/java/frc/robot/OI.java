@@ -1,6 +1,9 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.buttons.Button;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.auto.commands.PathfinderDrive;
 
 public class OI {
     public static final Joystick primary = new Joystick(0); //Logitech Dual Action
@@ -76,6 +79,11 @@ public class OI {
         return primary.getRawButtonPressed(10);
     }
 
+    public static boolean getPrimaryStartReleased() {
+        return primary.getRawButtonReleased(10);
+    }
+
+
     public static int getPrimaryDPad() {
         return primary.getPOV(0);
     }
@@ -141,4 +149,9 @@ public class OI {
     public static int getSecondaryDPad() {
         return secondary.getPOV(0);
     }
+
+    // Button testingButton = new JoystickButton(primary, 3);
+    // public OI(){
+    //     testingButton.whenActive(new PathfinderDrive());
+    // }
 }

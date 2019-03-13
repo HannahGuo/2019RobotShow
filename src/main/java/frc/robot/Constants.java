@@ -4,7 +4,7 @@ package frc.robot;
  * Constants
  */
 public class Constants {
-    public static final double angP = 0.09;
+    public static final double angP = 0.02;
 
     public static final int oneEncoderRotationNativeUnits = 4096; 
     public static final int pidMax = 1023;

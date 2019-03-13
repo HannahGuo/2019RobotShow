@@ -28,9 +28,11 @@ public class LimelightVision {
         SmartDashboard.putNumber("Horizontal Offset", getHorizontalOffset());
         SmartDashboard.putNumber("Vertical Offset", getVerticalOffset());
         SmartDashboard.putNumber("Skew", getSkew());
+        SmartDashboard.putNumber("Distance", getDistance());
+        SmartDashboard.putBoolean("Has targets?", isTargetVisible());
     }
 
-    public static boolean isTargetVisible(){
+    public boolean isTargetVisible(){
         return table.getEntry("tv").getDouble(0.0) == 1.0;
     }
 
@@ -54,6 +56,15 @@ public class LimelightVision {
 
     public static void setCamMode(int camMode){
         // 0 = Vision Processing, 1 = Drive Camera
-        NetworkTableInstance.getDefault().getTable("limelight").getEntry("<variablename>").setNumber(camMode);
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(camMode);
+    }
+
+    public static double getDistance(){
+        double a1 = 0.0;
+        double a2 = getVerticalOffset();
+        double h1 = 41.5; //inches
+        double h2 = 29.0; //inches
+        
+        return (h1 - h2) / Math.tan(a1 + a2);
     }
 }

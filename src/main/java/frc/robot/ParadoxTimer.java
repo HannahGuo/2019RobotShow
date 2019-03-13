@@ -7,9 +7,9 @@ public class ParadoxTimer {
     private static boolean isTiming = false;
     private static double startTime = 0.0;
 
-    public void enableTimer(){
+    public void enableTimer(double startTime){
         isTiming = true;
-        startTime = System.currentTimeMillis();
+        startTime = startTime;
     }
 
     public void disableTimer(){
@@ -20,7 +20,7 @@ public class ParadoxTimer {
         return isTiming;
     }
 
-    public boolean hasTimeHasPassed(double range){
-        return System.currentTimeMillis() - startTime >= range;
+    public boolean hasTimeHasPassed(double range, double currentTime){
+        return currentTime - startTime >= range;
     } 
 }

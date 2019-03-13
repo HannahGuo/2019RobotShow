@@ -7,48 +7,42 @@
 
 package frc.robot.auto.commands;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.Constants;
+import frc.robot.LimelightVision;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.Drive;
 
-public class SimpleDrive extends Command {
+public class TurnToTarget extends Command {
   private Drive drive;
-  private double targetDistance;
-  private double targetAngle;
+  private LimelightVision limelightVision;
 
-  public SimpleDrive(double targetDistance, double targetAngle) {
+  public TurnToTarget() {
     this.drive = Drive.getInstance();
     requires(drive);
-    this.targetDistance = targetDistance;
-    this.targetAngle = targetAngle;
   }
 
   @Override
   protected void initialize() {
-    drive = Drive.getInstance();
-    setTimeout(10.0);
   }
 
   @Override
   protected void execute() {
-    double angleError = targetAngle - RobotMap.gyroSPI.getAbsoluteAngle();
-    
-    drive.driveLR(angleError * Constants.getAngleP(), angleError * Constants.getAngleP());
+    RobotMap.driveLeftTop.set(ControlMode.PercentOutput, 0.5);
+    RobotMap.driveRightTop.set(ControlMode.PercentOutput, 0.5);
   }
 
   @Override
   protected boolean isFinished() {
-    return this.isTimedOut();
+    return limelightVision.isTargetVisible();
   }
 
   @Override
   protected void end() {
-    drive.stopMoving();
   }
 
   @Override
   protected void interrupted() {
-    System.out.println(this.getName() + " was interrupted.");
   }
 }
