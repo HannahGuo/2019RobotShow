@@ -108,10 +108,9 @@ public class RobotMap {
         // elevatorTop.config_kF(1, 0.3, 10);
         // elevatorTop.config_IntegralZone(1, 250, 10);
 
-        elevatorBot.set(ControlMode.PercentOutput, 0.0);
-        // elevatorBot.follow(elevatorTop);
-        // elevatorBot.setNeutralMode(NeutralMode.Brake);
-        // elevatorBot.setInverted(InvertType.FollowMaster);
+        elevatorBot.follow(elevatorTop);
+        elevatorBot.setNeutralMode(NeutralMode.Brake);
+        elevatorBot.setInverted(InvertType.FollowMaster);
 
         intakeTop.set(ControlMode.PercentOutput, 0.0);
 

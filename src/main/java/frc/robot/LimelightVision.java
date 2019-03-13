@@ -32,7 +32,7 @@ public class LimelightVision {
         SmartDashboard.putBoolean("Has targets?", isTargetVisible());
     }
 
-    public boolean isTargetVisible(){
+    public static boolean isTargetVisible(){
         return table.getEntry("tv").getDouble(0.0) == 1.0;
     }
 
@@ -54,7 +54,7 @@ public class LimelightVision {
         return table.getEntry("ta").getDouble(0.0);
     }  
 
-    public void setCamMode(int camMode){
+    public static void setCamMode(int camMode){
         // 0 = Vision Processing, 1 = Drive Camera
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(camMode);
     }
@@ -65,6 +65,11 @@ public class LimelightVision {
         double h1 = 41.5; //inches
         double h2 = 29.0; //inches
         
-        return (h1 - h2) / Math.tan(a1 + a2);
+        return (h2 - h1) / Math.tan(a1 + a2);
+    }
+
+    public static void setBlink(int blink) {
+        // 1 --> Force off, 2 --> Force, 3 --> Force on
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(blink);
     }
 }

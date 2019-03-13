@@ -16,6 +16,7 @@ import frc.robot.LimelightVision;
 import frc.robot.OI;
 import frc.robot.ParadoxTimer;
 import frc.robot.RobotMap;
+import frc.robot.SynchronousPID;
 
 public class Drive extends Subsystem {
   private static Drive instance;
@@ -28,47 +29,60 @@ public class Drive extends Subsystem {
   @Override
   public void initDefaultCommand() {
     setDefaultCommand(new Command() {
+      private SynchronousPID hPID;
+
       {
+        this.hPID = new SynchronousPID();
+				this.hPID.setOutputRange(-1.0, 1.0);
         requires(getInstance());
       }
 
       protected void initialize() {
+        this.hPID.reset();
+				this.hPID.setPID(0.01, 0.0002, 0);
         System.out.println("Starting " + this.getName());
       }
 
       protected void execute() {
-        double straight = OI.getPrimaryLeftYAxis(), steering = Math.pow(OI.getPrimaryRightXAxis(), 3), 
-               multiplier = OI.getPrimaryLB() ? 0.3 : 1.0, left, right;
+        double straight = OI.getPrimaryLeftYAxis(), multiplier = OI.getPrimaryLB() ? 0.3 : 1.0, steering, left, right;
         
         if(OI.getPrimaryRB()) {
           limelightVision.setCamMode(0);
-          visionToggle.enableTimer(System.currentTimeMillis());
+          if(!visionToggle.isEnabled()) {
+            visionToggle.enableTimer(System.currentTimeMillis());
+          }
         } else {
           limelightVision.setCamMode(1);
-        }
-
-        if(OI.getPrimaryRB() && limelightVision.isTargetVisible() && limelightVision.getHorizontalOffset() != 0.0 && visionToggle.hasTimeHasPassed(400, System.currentTimeMillis())){
-          limelightVision.updateVision();
-          steering = limelightVision.getHorizontalOffset();  
-          left = multiplier * (-straight + steering);
-          right = multiplier * (straight + steering);
-          SmartDashboard.putNumber("STEERING", steering);
-        } else {
-          if(-0.1 < straight && 0.1 > straight) straight = 0.0;
-          if(-0.1 < steering && 0.1 > steering) steering = 0.0;
-          left = multiplier * (-straight - steering);
-          right = multiplier * (straight - steering);
           visionToggle.disableTimer();
         }
 
-        steering *= Constants.angP;
-        left = multiplier * (-straight - steering);
-        right = multiplier * (straight - steering);
+        if(OI.getPrimaryRB() && limelightVision.isTargetVisible() && limelightVision.getHorizontalOffset() != 0.0 && visionToggle.hasTimeHasPassed(800, System.currentTimeMillis())){
+          limelightVision.updateVision();
+          steering = limelightVision.getHorizontalOffset() * Constants.limelightP;  
+          left = multiplier * (-straight - steering);
+          right = multiplier * (straight - steering);
+        } else {
+          this.hPID.setSetpoint(Math.pow(OI.getPrimaryRightXAxis(), 3) * 400);
+          steering = this.hPID.calculate(RobotMap.gyroSPI.getRate());
+          
+          if(-0.1 < straight && 0.1 > straight) straight = 0.0;
+          if(-0.1 < steering && 0.1 > steering) steering = 0.0;
 
+          left = multiplier * (-straight - steering);
+          right = multiplier * (straight - steering);
+        }
+        
+        SmartDashboard.putNumber("STEERING", steering);
+        SmartDashboard.putNumber("GYRO RATE", RobotMap.gyroSPI.getRate());
         driveLR(left, right);
 
-        if(OI.getPrimaryA()) RobotMap.driveShifter.set(false); // low gear
-        else if(OI.getPrimaryY()) RobotMap.driveShifter.set(true); // high gear
+        if(OI.getPrimaryB()) RobotMap.driveShifter.set(true); // low gear
+        else if(OI.getPrimaryA()) RobotMap.driveShifter.set(false); // high gear
+      }
+
+      protected void end(){
+        System.out.println("Stopping " + this.getName());
+        this.hPID.reset();
       }
 
       protected boolean isFinished() {

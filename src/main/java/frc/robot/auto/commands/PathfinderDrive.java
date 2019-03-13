@@ -58,7 +58,7 @@ public class PathfinderDrive extends Command {
     double gyroHeading = RobotMap.gyroSPI.getAbsoluteAngle();
     double desiredHeading = -45;
     
-    double angleError = gyroHeading - desiredHeading;
+    double angleError = desiredHeading - gyroHeading;
 
     double steering = Constants.angP * angleError;
     drive.driveLR(-leftStraight + steering, rightStraight + steering);

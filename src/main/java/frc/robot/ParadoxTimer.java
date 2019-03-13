@@ -4,7 +4,7 @@ package frc.robot;
  * A class for timers used in the robot code.
  */
 public class ParadoxTimer {
-    private static boolean isTiming = false;
+    private boolean isTiming = false;
     private double startTime = 0.0;
 
     public void enableTimer(double startTime){
@@ -21,6 +21,10 @@ public class ParadoxTimer {
     }
 
     public boolean hasTimeHasPassed(double range, double currentTime){
-        return currentTime - startTime >= range;
+        return currentTime - this.startTime >= range;
     } 
+
+    public double getTimePassed(double currentTime){
+        return currentTime - this.startTime;
+    }
 }

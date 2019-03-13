@@ -4,7 +4,9 @@ package frc.robot;
  * Constants
  */
 public class Constants {
-    public static final double angP = 0.02;
+    public static final double angP = 0.01;
+    public static final double maxAngVel = 400; // 400 deg/sec cuz why not
+    public static final double limelightP = 0.025;
 
     public static final int oneEncoderRotationNativeUnits = 4096; 
     public static final int pidMax = 1023;
@@ -19,8 +21,6 @@ public class Constants {
     
     public static final double wheelDiameterIn = 6.2;
     public static final double wheelDiameterM = inchesToMeters(wheelDiameterIn);
-
-    public static boolean testingMode = true;
 
     public static double degToTicks(double degrees) {
         return degrees * (4096 / 360);

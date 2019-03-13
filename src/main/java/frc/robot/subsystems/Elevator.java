@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.LimelightVision;
 import frc.robot.OI;
 import frc.robot.ParadoxTimer;
 import frc.robot.RobotMap;
@@ -52,7 +53,7 @@ public class Elevator extends Subsystem {
     // Yes, that messes everything up.
 
     // Elevator Height, Vel, Accel, Claw Position (All of these units are in native encoder units (4096units/1rev)
-    // Intake Wheels Top, Intake Wheels Bot
+    // Intake Wheels Top, Intake Wheels Bot, piston state
     MANUAL(0, 0, 0, 0, false),
     ZERO(0, 0, 0, 0, false),
     BEAST(100, 10000, 10000, 100, false),
@@ -177,7 +178,6 @@ public class Elevator extends Subsystem {
             if(OI.getSecondaryRT()) {
               elevatorState = ElevatorState.INTAKEHUMANHATCH;
               humanHatchMode = true;
-              lastIntakeItem = "HATCH";
             } else {
               if(!humanHatchMode){
                 if(isHatchIn() || lastIntakeItem == "HATCH") elevatorState = ElevatorState.HATCH1;
@@ -185,7 +185,6 @@ public class Elevator extends Subsystem {
               } else {
                 elevatorState = ElevatorState.INTAKEHATCH1;
                 humanHatchMode = true;
-                lastIntakeItem = "HATCH";
               }
             }
           } else if(OI.getSecondaryX()) {
@@ -201,11 +200,8 @@ public class Elevator extends Subsystem {
             elevatorZeroed = false;
             wristZeroed = false;
           } else if(OI.getSecondaryDPad() != -1) {
-            if(isHatchIn()){
-              elevatorState = ElevatorState.HOLDHATCH1;
-            } else {
-              elevatorState = ElevatorState.HOLDDEF;
-            }
+            if(isHatchIn()) elevatorState = ElevatorState.HOLDHATCH1;
+            else elevatorState = ElevatorState.HOLDDEF;
           } else if(OI.getSecondaryRB()) {
             elevatorState = ElevatorState.CARGOBALL;
           } 
@@ -219,23 +215,20 @@ public class Elevator extends Subsystem {
           } else if(isGroundIntakeMode()) {
             if(OI.getSecondaryRT()) {
               elevatorState = ElevatorState.INTAKEHATCH;
-              lastIntakeItem = "HATCH";
-            }
-            else if(OI.getSecondaryLT()) { 
+            } else if(OI.getSecondaryLT()) { 
               elevatorState = ElevatorState.INTAKEBALLGROUND;
-              lastIntakeItem = "BALL";
-            }
-            else if(OI.getSecondaryLB()) {
+            } else if(OI.getSecondaryLB()) {
               elevatorState = ElevatorState.INTAKEBALLUP;
-              lastIntakeItem = "BALL";
-            }
-            else elevatorState = ElevatorState.INTAKE;
+            } else elevatorState = ElevatorState.INTAKE;
           } 
 
           if(!OI.getPrimaryRT()){
             lowerHatch = 0;
           } 
-        } // beast mode effect ends here
+        } // beast mode disable effect ends here
+
+        if(elevatorState == ElevatorState.BEAST) LimelightVision.setBlink(2);
+        else LimelightVision.setBlink(0);
 
         if(!elevatorZeroed) {
           if(isElevatorButtonPressed()) {
@@ -281,6 +274,7 @@ public class Elevator extends Subsystem {
             RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0.3);
           }
 
+          
           if(isWristButtonPressed() && elevatorZeroed && !wristZeroed){
             wristZeroed = true;
             RobotMap.wristControl.set(ControlMode.PercentOutput, 0);
@@ -296,25 +290,23 @@ public class Elevator extends Subsystem {
         } else if(elevatorState == ElevatorState.BEAST) {
           if(isElevatorButtonPressed() || beastEle) {
             beastEle = true;
-            RobotMap.elevatorTop.configMotionCruiseVelocity(ElevatorState.HOLDDEF.getVel());
-            RobotMap.elevatorTop.configMotionAcceleration(ElevatorState.HOLDDEF.getAccel());
-            RobotMap.elevatorTop.set(ControlMode.MotionMagic, ElevatorState.HOLDDEF.getElevatorHeight());
+            RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0.0);
           } else {
             RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0.3);
           }
 
           if(isWristButtonPressed() || beastWrist) {
             beastWrist = true;
-            RobotMap.wristControl.configMotionCruiseVelocity(CLAW_VEL);
-            RobotMap.wristControl.configMotionAcceleration(CLAW_ACCEL);
-            RobotMap.wristControl.set(ControlMode.MotionMagic, ElevatorState.HOLDDEF.getClawPosition());
+            RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0.0);
           } else {
             RobotMap.wristControl.set(ControlMode.PercentOutput, -0.3);
           }
 
         } else {
-          if(!(isHatchHeightMode() || isOrangeHeightMode())){
-            if(lastIntakeItem == "HATCH" && isIntakingHatch()) {
+          updateLastIntakeItem();
+
+          if(!(isHatchHeightMode() || isOrangeHeightMode()) && !isHoldMode()){
+            if((isHatchIn() && elevatorState == ElevatorState.INTAKEHATCH) || (isHatchIn() && elevatorState == ElevatorState.INTAKEHATCH1)) {
               elevatorState = ElevatorState.HOLDHATCH1;
             } else if((isForbiddenOrangeIn() && (elevatorState == ElevatorState.INTAKEBALLGROUND || elevatorState == ElevatorState.INTAKEBALLUP))){
               elevatorState = ElevatorState.HOLDDEF;
@@ -331,15 +323,13 @@ public class Elevator extends Subsystem {
 
           if(elevatorState == ElevatorState.INTAKEBALLUP || elevatorState == ElevatorState.INTAKEBALLGROUND) {
             if(ballIntakeTimer.isEnabled() && ballIntakeTimer.hasTimeHasPassed(300, System.currentTimeMillis())) {
-              // Ball is fully in
-              stopIntakeWheels();
+              stopIntakeWheels(); // Ball is fully in
             } else {
               runBallIntake();
             }
           } else if(elevatorState == ElevatorState.INTAKEHATCH) {
             if(hatchTimer.isEnabled() && hatchTimer.hasTimeHasPassed(400, System.currentTimeMillis())) {
-              // Hatch is fully in
-              stopIntakeWheels();
+              stopIntakeWheels(); // Hatch is fully in
             } else {
               runGroundHatchIntake();
             }
@@ -480,6 +470,10 @@ public class Elevator extends Subsystem {
     return elevatorState == ElevatorState.INTAKE || elevatorState == ElevatorState.INTAKEBALLUP || elevatorState == ElevatorState.INTAKEBALLGROUND || elevatorState == ElevatorState.INTAKEHATCH; 
   }
 
+  private static boolean isIntaking(){
+    return elevatorState == ElevatorState.INTAKEHATCH || elevatorState == ElevatorState.INTAKEHATCH1 || elevatorState == ElevatorState.INTAKEBALLGROUND || elevatorState == ElevatorState.INTAKEBALLUP;
+  }
+
   private static boolean isHatchHeightMode(){
     return elevatorState == ElevatorState.HATCH1 || elevatorState == ElevatorState.HATCH2 || elevatorState == ElevatorState.HATCH3;
   }
@@ -490,5 +484,11 @@ public class Elevator extends Subsystem {
 
   private static boolean isHoldMode(){
     return elevatorState == ElevatorState.HOLDDEF || elevatorState == ElevatorState.HOLDHATCH1 || elevatorState == ElevatorState.HOLDHATCH2;
+  }
+
+  private static void updateLastIntakeItem(){
+    if(isIntaking()) {
+      lastIntakeItem = isIntakingOrange() ? "BALL" : "HATCH";
+    } 
   }
 }

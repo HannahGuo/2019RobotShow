@@ -52,6 +52,7 @@ public class Robot extends TimedRobot {
   public void disabledInit(){
     drive.stopMoving();
     elevator.stopMoving();
+    LimelightVision.setBlink(1);
   }
 
   @Override
@@ -59,6 +60,7 @@ public class Robot extends TimedRobot {
     c.setClosedLoopControl(true);
     Scheduler.getInstance().removeAll();
     robotMap.resetSensors();
+    LimelightVision.setBlink(0);
   }
 
   @Override
@@ -67,7 +69,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("GYRO ANGLE", RobotMap.gyroSPI.getAbsoluteAngle());
     // limelightVision.visionCalc();
   }
-
+  
   @Override
   public void testPeriodic() {
   }
