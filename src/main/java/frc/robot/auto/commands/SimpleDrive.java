@@ -34,7 +34,7 @@ public class SimpleDrive extends Command {
   protected void execute() {
     double angleError = targetAngle - RobotMap.gyroSPI.getAbsoluteAngle();
     
-    drive.driveLR(angleError * Constants.getAngleP(), angleError * Constants.getAngleP());
+    drive.driveLR(angleError * Constants.angP, angleError * Constants.angP);
   }
 
   @Override

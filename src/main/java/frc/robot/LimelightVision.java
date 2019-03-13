@@ -54,7 +54,7 @@ public class LimelightVision {
         return table.getEntry("ta").getDouble(0.0);
     }  
 
-    public static void setCamMode(int camMode){
+    public void setCamMode(int camMode){
         // 0 = Vision Processing, 1 = Drive Camera
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(camMode);
     }

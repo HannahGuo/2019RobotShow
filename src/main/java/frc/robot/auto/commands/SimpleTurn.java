@@ -43,10 +43,10 @@ public class SimpleTurn extends Command {
   protected void execute() {
     limelightVision.updateVision();
     angleError = RobotMap.gyroSPI.getAbsoluteAngle() - limelightVision.getHorizontalOffset();
-    RobotMap.driveLeftTop.set(ControlMode.PercentOutput, angleError * Constants.getAngleP());
-    RobotMap.driveRightTop.set(ControlMode.PercentOutput, angleError * Constants.getAngleP());
+    RobotMap.driveLeftTop.set(ControlMode.PercentOutput, angleError * Constants.angP);
+    RobotMap.driveRightTop.set(ControlMode.PercentOutput, angleError * Constants.angP);
 
-    System.out.println(angleError + " " + angleError * Constants.getAngleP());
+    System.out.println(angleError + " " + angleError * Constants.angP);
   }
 
   @Override

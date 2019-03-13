@@ -21,6 +21,16 @@ public class PathfinderDrive extends Command {
   private Drive drive;
   private static EncoderFollower left;
   private static EncoderFollower right;
+  Waypoint[] points = new Waypoint[] {
+    new Waypoint(-4, -1, Pathfinder.d2r(-45)),      // Waypoint @ x=-4, y=-1, exit angle=-45 degrees
+    new Waypoint(-2, -2, 0),                        // Waypoint @ x=-2, y=-2, exit angle=0 radians
+    new Waypoint(0, 0, 0)                           // Waypoint @ x=0, y=0,   exit angle=0 radians
+  };  
+
+  Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.05, 1.7, 2.0, 60.0);
+  Trajectory trajectory = Pathfinder.generate(points, config);
+  TankModifier modifier = new TankModifier(trajectory).modify(Constants.trackWidthInches);
+
   public PathfinderDrive() {
     this.drive = Drive.getInstance();
     requires(drive);
@@ -29,15 +39,6 @@ public class PathfinderDrive extends Command {
   @Override
   protected void initialize() {
     RobotMap.resetSensors();
-
-    Waypoint[] points = new Waypoint[] {
-      new Waypoint(0, 0, 0),                           // Waypoint @ x=0, y=0,   exit angle=0 radians
-      new Waypoint(0.5, 0.5, Pathfinder.d2r(-45)),      // Waypoint @ x=-4, y=-1, exit angle=-45 degrees
-    };
-  
-    Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.05, 1.7, 2.0, 60.0);
-    Trajectory trajectory = Pathfinder.generate(points, config);
-    TankModifier modifier = new TankModifier(trajectory).modify(Constants.trackWidthInches);
 
     left = new EncoderFollower(modifier.getLeftTrajectory());
     right = new EncoderFollower(modifier.getRightTrajectory());

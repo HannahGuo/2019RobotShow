@@ -47,9 +47,9 @@ public class Drive extends Subsystem {
           limelightVision.setCamMode(1);
         }
 
-        if(OI.getPrimaryRB() && limelightVision.isTargetVisible() && limelightVision.getHorizontalOffset() != 0 && visionToggle.hasTimeHasPassed(400, System.currentTimeMillis())){
+        if(OI.getPrimaryRB() && limelightVision.isTargetVisible() && limelightVision.getHorizontalOffset() != 0.0 && visionToggle.hasTimeHasPassed(400, System.currentTimeMillis())){
           limelightVision.updateVision();
-          steering = limelightVision.getHorizontalOffset() * Constants.angP;  
+          steering = limelightVision.getHorizontalOffset();  
           left = multiplier * (-straight + steering);
           right = multiplier * (straight + steering);
           SmartDashboard.putNumber("STEERING", steering);
@@ -60,6 +60,8 @@ public class Drive extends Subsystem {
           right = multiplier * (straight - steering);
           visionToggle.disableTimer();
         }
+
+        steering *= Constants.angP;
         left = multiplier * (-straight - steering);
         right = multiplier * (straight - steering);
 

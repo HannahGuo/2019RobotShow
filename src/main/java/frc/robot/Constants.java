@@ -21,9 +21,6 @@ public class Constants {
     public static final double wheelDiameterM = inchesToMeters(wheelDiameterIn);
 
     public static boolean testingMode = true;
-    public static double getAngleP(){
-        return angP;
-    }
 
     public static double degToTicks(double degrees) {
         return degrees * (4096 / 360);
