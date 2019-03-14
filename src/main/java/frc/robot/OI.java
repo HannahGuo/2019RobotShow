@@ -1,9 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.buttons.Button;
-import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import frc.robot.auto.commands.PathfinderDrive;
 
 public class OI {
     public static final Joystick primary = new Joystick(0); //Logitech Dual Action

@@ -53,7 +53,9 @@ public class Elevator extends Subsystem {
     // Yes, that messes everything up.
 
     // Elevator Height, Vel, Accel, Claw Position (All of these units are in native encoder units (4096units/1rev)
-    // Intake Wheels Top, Intake Wheels Bot, piston state
+    // Intake Wheels Top, Intake Wheels Bot, piston 
+    
+    // 4000 units is about an inch :)
     MANUAL(0, 0, 0, 0, false),
     ZERO(0, 0, 0, 0, false),
     BEAST(100, 10000, 10000, 100, false),
@@ -72,8 +74,8 @@ public class Elevator extends Subsystem {
 
     CARGOBALL(-28983, 10000, 15000, 3200, false),
     HATCH1(-8750, 10000, 29000, 4115, true),
-    HATCH2(-48000, 10000, 31000, 4115, true),
-    HATCH3(-90830, 10000, 33000, 4115, true),
+    HATCH2(-56000, 10000, 31000, 4115, true),
+    HATCH3(-98830, 10000, 33000, 4115, true),
     BALL1(-21983, 10000, 29000, 4115, false),
     BALL2(-66900, 10000, 31000, 4115, false),
     BALL3(-97195, 10000, 33000, 3310, false);
@@ -205,6 +207,11 @@ public class Elevator extends Subsystem {
           } else if(OI.getSecondaryRB()) {
             elevatorState = ElevatorState.CARGOBALL;
           } 
+
+          if(!OI.getPrimaryRT() && isHatchHeightMode()){
+            lowerHatch = 0;
+            stopIntakeWheels();
+          }
           
           // Intakes and Outtakes
           if(OI.getPrimaryRT()){          
@@ -220,10 +227,6 @@ public class Elevator extends Subsystem {
             } else if(OI.getSecondaryLB()) {
               elevatorState = ElevatorState.INTAKEBALLUP;
             } else elevatorState = ElevatorState.INTAKE;
-          } 
-
-          if(!OI.getPrimaryRT()){
-            lowerHatch = 0;
           } 
         } // beast mode disable effect ends here
 
