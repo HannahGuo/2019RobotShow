@@ -80,11 +80,9 @@ public class OI {
         return primary.getRawButtonReleased(10);
     }
 
-
-    public static int getPrimaryDPad() {
-        return primary.getPOV(0);
+    public static boolean isPrimaryDPadPressed() {
+        return primary.getPOV(0) != -1;
     }
-
 
     // SECONDARY
     public static double getSecondaryLeftXAxis(){

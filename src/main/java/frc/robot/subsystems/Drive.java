@@ -22,6 +22,8 @@ public class Drive extends Subsystem {
   private static Drive instance;
   private LimelightVision limelightVision = LimelightVision.getInstance();
   private ParadoxTimer visionToggle = new ParadoxTimer();
+  private boolean openLoop = false;
+  private boolean fnatic = false; // open loop toggle thing
   public static Drive getInstance() {
     return instance == null ? instance = new Drive() : instance;
   }
@@ -46,6 +48,10 @@ public class Drive extends Subsystem {
       protected void execute() {
         double straight = OI.getPrimaryLeftYAxis(), multiplier = OI.getPrimaryLB() ? 0.3 : 1.0, steering, left, right;
         
+        if(OI.isPrimaryDPadPressed()) {
+          openLoop = true;
+        }
+
         if(OI.getPrimaryRB()) {
           limelightVision.setCamMode(0);
           if(!visionToggle.isEnabled()) {
@@ -61,6 +67,23 @@ public class Drive extends Subsystem {
           steering = limelightVision.getHorizontalOffset() * Constants.limelightP;  
           left = multiplier * (-straight - steering);
           right = multiplier * (straight - steering);
+        } else if(openLoop) {
+          steering = Math.pow(OI.getPrimaryRightXAxis(), 3);
+
+          if(-0.1 < straight && 0.1 > straight) straight = 0.0;
+          if(-0.1 < steering && 0.1 > steering) steering = 0.0;
+
+          left = multiplier * (-straight - steering);
+          right = multiplier * (straight - steering);
+
+          if(!OI.isPrimaryDPadPressed() && !fnatic) {
+            fnatic = true;
+          }
+
+          if(OI.isPrimaryDPadPressed() && fnatic) {
+            openLoop = false;
+            fnatic = false;
+          }
         } else {
           this.hPID.setSetpoint(Math.pow(OI.getPrimaryRightXAxis(), 3) * 400);
           steering = this.hPID.calculate(RobotMap.gyroSPI.getRate());
@@ -74,6 +97,7 @@ public class Drive extends Subsystem {
         
         SmartDashboard.putNumber("STEERING", steering);
         SmartDashboard.putNumber("GYRO RATE", RobotMap.gyroSPI.getRate());
+        SmartDashboard.putBoolean("IS OPEN LOOP?", openLoop);
         driveLR(left, right);
 
         if(OI.getPrimaryB()) RobotMap.driveShifter.set(true); // low gear

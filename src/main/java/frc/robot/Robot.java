@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Elevator.ElevatorState;
 
 public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
@@ -41,6 +42,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    Scheduler.getInstance().removeAll();
   }
 
   @Override
@@ -50,6 +52,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit(){
+    robotMap.resetSensors();
     drive.stopMoving();
     elevator.stopMoving();
     LimelightVision.setBlink(1);
@@ -58,9 +61,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit(){
     c.setClosedLoopControl(true);
-    Scheduler.getInstance().removeAll();
-    robotMap.resetSensors();
+    // Scheduler.getInstance().removeAll();
     LimelightVision.setBlink(0);
+    Elevator.elevatorState = ElevatorState.MANUAL;
   }
 
   @Override

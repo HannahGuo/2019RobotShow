@@ -49,8 +49,8 @@ public class RobotMap {
         driveLeftTop.setNeutralMode(NeutralMode.Brake);
         driveLeftTop.configVoltageCompSaturation(12.0, 10);
         driveLeftTop.enableVoltageCompensation(true);
-        driveLeftTop.configContinuousCurrentLimit(25, 10);
-        driveLeftTop.configPeakCurrentLimit(25, 10);
+        driveLeftTop.configContinuousCurrentLimit(26, 10);
+        driveLeftTop.configPeakCurrentLimit(26, 10);
         driveLeftTop.configPeakCurrentDuration(0, 10);
         driveLeftTop.enableCurrentLimit(true);
         driveLeftTop.setInverted(true);
@@ -59,8 +59,8 @@ public class RobotMap {
         driveLeftBot.setNeutralMode(NeutralMode.Brake);
         driveLeftBot.configVoltageCompSaturation(12.0, 10);
         driveLeftBot.enableVoltageCompensation(true);
-        driveLeftBot.configContinuousCurrentLimit(28, 10);
-        driveLeftBot.configPeakCurrentLimit(28, 10);
+        driveLeftBot.configContinuousCurrentLimit(26, 10);
+        driveLeftBot.configPeakCurrentLimit(26, 10);
         driveLeftBot.configPeakCurrentDuration(0, 10);
         driveLeftBot.enableCurrentLimit(true);
         driveLeftBot.setInverted(true);
@@ -71,8 +71,8 @@ public class RobotMap {
         driveRightTop.setNeutralMode(NeutralMode.Brake);
         driveRightTop.configVoltageCompSaturation(12.0, 10);
         driveRightTop.enableVoltageCompensation(true);
-        driveRightTop.configContinuousCurrentLimit(28, 10);
-        driveRightTop.configPeakCurrentLimit(28, 10);
+        driveRightTop.configContinuousCurrentLimit(26, 10);
+        driveRightTop.configPeakCurrentLimit(26, 10);
         driveRightTop.configPeakCurrentDuration(0, 10);
         driveRightTop.enableCurrentLimit(true);
         driveRightTop.setInverted(true);
@@ -81,8 +81,8 @@ public class RobotMap {
         driveRightBot.setNeutralMode(NeutralMode.Brake);
         driveRightBot.configVoltageCompSaturation(12.0, 10);
         driveRightBot.enableVoltageCompensation(true);
-        driveRightBot.configContinuousCurrentLimit(28, 10);
-        driveRightBot.configPeakCurrentLimit(28, 10);
+        driveRightBot.configContinuousCurrentLimit(26, 10);
+        driveRightBot.configPeakCurrentLimit(26, 10);
         driveRightBot.configPeakCurrentDuration(0, 10);
         driveRightBot.enableCurrentLimit(true);
         driveRightBot.setInverted(true);
