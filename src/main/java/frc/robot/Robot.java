@@ -63,7 +63,7 @@ public class Robot extends TimedRobot {
     c.setClosedLoopControl(true);
     // Scheduler.getInstance().removeAll();
     LimelightVision.setBlink(0);
-    Elevator.elevatorState = ElevatorState.MANUAL;
+    // Elevator.elevatorState = ElevatorState.MANUAL; //UNCOMM
   }
 
   @Override

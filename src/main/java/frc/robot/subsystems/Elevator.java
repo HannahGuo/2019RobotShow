@@ -19,8 +19,8 @@ import frc.robot.RobotMap;
 public class Elevator extends Subsystem {
   private static Elevator instance;
 
-  private static final int CLAW_VEL = 700;
-  private static final int CLAW_ACCEL = 1200;
+  private static final int CLAW_VEL = 900;
+  private static final int CLAW_ACCEL = 2200;
 
   public static ElevatorState elevatorState = ElevatorState.ZERO;
   private static ElevatorState lastState = ElevatorState.ZERO;
@@ -58,27 +58,27 @@ public class Elevator extends Subsystem {
     // 4000 units is about an inch :)
     MANUAL(0, 0, 0, 0, false),
     ZERO(0, 0, 0, 0, false),
-    BEAST(100, 10000, 10000, 100, false),
-    HOLDDEF(-3500, 10000, 10000, 920, false),
-    HOLDHATCH1(-3500, 10000, 10000, 200, true),
-    HOLDHATCH2(-3500, 10000, 10000, 920, true),
+    BEAST(100, 10000, 12000, 100, false),
+    HOLDDEF(-3500, 10000, 12000, 920, false),
+    HOLDHATCH1(-3500, 10000, 12000, 200, true),
+    HOLDHATCH2(-3500, 10000, 12000, 920, true),
 
     INTAKE(-6000, 10000, 15000, 5240, false),
     INTAKEBALLGROUND(-6000, 10000, 15000, 5240, false),
     INTAKEBALLUP(-10075, 10000, 15000, 5240, false),
     INTAKEHATCH(-6000, 10000, 15000, 5240, false),
 
-    INTAKEHUMANHATCH(-2425, 10000, 15000, 4115, false),
-    INTAKEHATCH1(-11850, 10000, 15000, 4115, true),
+    INTAKEHUMANHATCH(-7525, 10000, 15000, 4315, false),
+    INTAKEHATCH1(-11850, 10000, 15000, 4315, true),
     // INTAKEHUMANBALL(-10025, 5000, 9000, 5240),
 
-    CARGOBALL(-28983, 10000, 15000, 3200, false),
-    HATCH1(-8750, 10000, 29000, 4115, true),
-    HATCH2(-56000, 10000, 31000, 4115, true),
-    HATCH3(-95830, 10000, 33000, 4115, true),
-    BALL1(-21983, 10000, 29000, 4115, false),
-    BALL2(-64900, 10000, 31000, 4115, false),
-    BALL3(-97195, 10000, 33000, 3510, false);
+    CARGOBALL(-52983, 10000, 20000, 4800, false),
+    HATCH1(-8750, 10000, 35000, 4115, true),
+    HATCH2(-56000, 10000, 37000, 4115, true),
+    HATCH3(-95830, 10000, 40000, 4115, true),
+    BALL1(-21983, 10000, 35000, 4115, false),
+    BALL2(-64900, 10000, 37000, 4115, false),
+    BALL3(-97195, 10000, 41000, 3510, false);
 
     private final int elevatorHeight;
     private final int vel;
@@ -203,7 +203,7 @@ public class Elevator extends Subsystem {
             elevatorZeroed = false;
             wristZeroed = false;
           } else if(OI.getSecondaryDPad() != -1) {
-            if(isHatchIn()) elevatorState = ElevatorState.HOLDHATCH1;
+            if(isHatchIn() || (lastIntakeItem == "HATCH" && !isHatchHeightMode())) elevatorState = ElevatorState.HOLDHATCH1;
             else elevatorState = ElevatorState.HOLDDEF;
           } else if(OI.getSecondaryRB()) {
             elevatorState = ElevatorState.CARGOBALL;
@@ -242,18 +242,20 @@ public class Elevator extends Subsystem {
           if(isElevatorButtonPressed()) {
             RobotMap.elevatorTop.getSensorCollection().setQuadraturePosition(0, 10);
             elevatorZeroed = true;
-          } else {
-            // System.out.println("Please zero the elevator!");
           }
+          // } else {
+          //   // System.out.println("Please zero the elevator!");
+          // }
         }
 
         if(!wristZeroed) {
           if(isWristButtonPressed()) {
             RobotMap.wristControl.getSensorCollection().setQuadraturePosition(0, 10);
             wristZeroed = true;
-          } else {
-            // System.out.println("Please zero the wrist!");
           }
+          // } else {
+          //   // System.out.println("Please zero the wrist!");
+          // }
         }
         
         if(elevatorState == ElevatorState.MANUAL) {
@@ -279,17 +281,16 @@ public class Elevator extends Subsystem {
             RobotMap.elevatorTop.getSensorCollection().setQuadraturePosition(0, 10);
             System.out.println("Elevator has been rezeroed!");
           } else {
-            RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0.3);
+            RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0.7);
           }
 
-          
           if(isWristButtonPressed() && elevatorZeroed && !wristZeroed){
             wristZeroed = true;
             RobotMap.wristControl.set(ControlMode.PercentOutput, 0);
             RobotMap.wristControl.getSensorCollection().setQuadraturePosition(0, 10);
             System.out.println("Wrist has been rezeroed!");
           } else {
-            RobotMap.wristControl.set(ControlMode.PercentOutput, -0.3);
+            RobotMap.wristControl.set(ControlMode.PercentOutput, -0.7);
 
           }
 
@@ -305,14 +306,14 @@ public class Elevator extends Subsystem {
             beastEle = true;
             RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0.0);
           } else {
-            RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0.3);
+            RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0.7);
           }
 
           if(isWristButtonPressed() || beastWrist) {
             beastWrist = true;
             RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0.0);
           } else {
-            RobotMap.wristControl.set(ControlMode.PercentOutput, -0.3);
+            RobotMap.wristControl.set(ControlMode.PercentOutput, -0.7);
           }
 
         } else {
@@ -332,7 +333,7 @@ public class Elevator extends Subsystem {
 
           if(isForbiddenOrangeIn() && !ballIntakeTimer.isEnabled() && isIntakingOrange()) ballIntakeTimer.enableTimer(System.currentTimeMillis());
 
-          if(isHatchIn() && !hatchTimer.isEnabled() && isIntakingHatch()) hatchTimer.enableTimer(System.currentTimeMillis());
+          if(isHatchIn() && !hatchTimer.isEnabled() && elevatorState == ElevatorState.INTAKEHATCH) hatchTimer.enableTimer(System.currentTimeMillis());
 
           if(elevatorState == ElevatorState.INTAKEBALLUP || elevatorState == ElevatorState.INTAKEBALLGROUND) {
             if(ballIntakeTimer.isEnabled() && ballIntakeTimer.hasTimeHasPassed(300, System.currentTimeMillis())) {
@@ -475,7 +476,7 @@ public class Elevator extends Subsystem {
   }
 
   private static boolean isIntakingHatch(){
-    return elevatorState == ElevatorState.INTAKEHATCH || elevatorState == ElevatorState.INTAKEHATCH1;
+    return elevatorState == ElevatorState.INTAKEHATCH || elevatorState == ElevatorState.INTAKEHATCH1 || elevatorState == ElevatorState.INTAKEHUMANHATCH;
   }
 
   private static boolean isIntakingOrange(){
