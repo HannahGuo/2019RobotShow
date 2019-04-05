@@ -8,6 +8,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -58,26 +59,26 @@ public class Elevator extends Subsystem {
     // 4000 units is about an inch :)
     MANUAL(0, 0, 0, 0, false),
     ZERO(0, 0, 0, 0, false),
-    BEAST(100, 10000, 12000, 100, false),
-    HOLDDEF(-3500, 10000, 12000, 920, false),
-    HOLDHATCH1(-3500, 10000, 12000, 200, true),
-    HOLDHATCH2(-3500, 10000, 12000, 920, true),
+    BEAST(100, 10000, 16000, 100, false),
+    HOLDDEF(-3500, 10000, 17000, 920, false),
+    HOLDHATCH1(-3500, 10000, 17000, 200, true),
+    HOLDHATCH2(-3500, 10000, 17000, 920, true),
 
-    INTAKE(-6000, 10000, 15000, 5240, false),
-    INTAKEBALLGROUND(-6000, 10000, 15000, 5240, false),
-    INTAKEBALLUP(-10075, 10000, 15000, 5240, false),
-    INTAKEHATCH(-6000, 10000, 15000, 5240, false),
+    INTAKE(-6000, 10000, 22000, 5240, false),
+    INTAKEBALLGROUND(-6000, 10000, 22000, 5240, false),
+    INTAKEBALLUP(-10075, 10000, 22000, 5240, false),
+    INTAKEHATCH(-6000, 10000, 22000, 5240, false),
 
-    INTAKEHUMANHATCH(-7525, 10000, 15000, 4315, false),
-    INTAKEHATCH1(-11850, 10000, 15000, 4315, true),
+    INTAKEHUMANHATCH(-5625, 10000, 15000, 4395, false),
+    INTAKEHATCH1(-10850, 10000, 15000, 4395, true),
     // INTAKEHUMANBALL(-10025, 5000, 9000, 5240),
 
     CARGOBALL(-52983, 10000, 20000, 4800, false),
-    HATCH1(-8750, 10000, 35000, 4115, true),
-    HATCH2(-56000, 10000, 37000, 4115, true),
-    HATCH3(-95830, 10000, 40000, 4115, true),
-    BALL1(-21983, 10000, 35000, 4115, false),
-    BALL2(-64900, 10000, 37000, 4115, false),
+    HATCH1(-8750, 10000, 39000, 4115, true),
+    HATCH2(-56000, 10000, 40000, 4115, true),
+    HATCH3(-95830, 10000, 41000, 4115, true),
+    BALL1(-21983, 10000, 39000, 4115, false),
+    BALL2(-64900, 10000, 40000, 4115, false),
     BALL3(-97195, 10000, 41000, 3510, false);
 
     private final int elevatorHeight;
@@ -125,24 +126,6 @@ public class Elevator extends Subsystem {
 
       protected void initialize() {
         System.out.println("Starting " + this.getName());
-
-        if(isElevatorButtonPressed()) {
-          RobotMap.elevatorTop.getSensorCollection().setQuadraturePosition(0, 10);
-          System.out.println("Elevator has been zeroed!");
-          elevatorZeroed = true;
-        } else {
-          System.out.println("Please zero the elevator!!");
-          elevatorZeroed = false;
-        }
-
-        if(isWristButtonPressed()) {
-          RobotMap.wristControl.getSensorCollection().setQuadraturePosition(0, 10);
-          System.out.println("Wrist has been zeroed!");
-          wristZeroed = true;
-        } else {
-          System.out.println("Please zero the wrist!!");
-          wristZeroed = false;
-        }
       }
 
       protected void execute() {
@@ -209,7 +192,7 @@ public class Elevator extends Subsystem {
             elevatorState = ElevatorState.CARGOBALL;
           } 
 
-          if(!OI.getPrimaryRT() && isHatchHeightMode()){
+          if(!OI.getPrimaryRT()){
             lowerHatch = 0;
             stopIntakeWheels();
           }
@@ -237,26 +220,6 @@ public class Elevator extends Subsystem {
 
         if(elevatorState == ElevatorState.BEAST) LimelightVision.setBlink(2);
         else LimelightVision.setBlink(0);
-
-        if(!elevatorZeroed) {
-          if(isElevatorButtonPressed()) {
-            RobotMap.elevatorTop.getSensorCollection().setQuadraturePosition(0, 10);
-            elevatorZeroed = true;
-          }
-          // } else {
-          //   // System.out.println("Please zero the elevator!");
-          // }
-        }
-
-        if(!wristZeroed) {
-          if(isWristButtonPressed()) {
-            RobotMap.wristControl.getSensorCollection().setQuadraturePosition(0, 10);
-            wristZeroed = true;
-          }
-          // } else {
-          //   // System.out.println("Please zero the wrist!");
-          // }
-        }
         
         if(elevatorState == ElevatorState.MANUAL) {
           if(isElevatorButtonPressed() && OI.getSecondaryLeftYAxis() >= 0) RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0);
@@ -273,7 +236,6 @@ public class Elevator extends Subsystem {
           else if(OI.getSecondaryLT()) runBallIntake();
           else if(OI.getSecondaryRT()) runHumanHatchIntake();
           else RobotMap.traumatizedGhosts.set(false);
-
         } else if(elevatorState == ElevatorState.ZERO) {
           if(isElevatorButtonPressed() && !elevatorZeroed){
             elevatorZeroed = true;
@@ -281,7 +243,7 @@ public class Elevator extends Subsystem {
             RobotMap.elevatorTop.getSensorCollection().setQuadraturePosition(0, 10);
             System.out.println("Elevator has been rezeroed!");
           } else {
-            RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0.7);
+            RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0.5);
           }
 
           if(isWristButtonPressed() && elevatorZeroed && !wristZeroed){
@@ -290,8 +252,7 @@ public class Elevator extends Subsystem {
             RobotMap.wristControl.getSensorCollection().setQuadraturePosition(0, 10);
             System.out.println("Wrist has been rezeroed!");
           } else {
-            RobotMap.wristControl.set(ControlMode.PercentOutput, -0.7);
-
+            RobotMap.wristControl.set(ControlMode.PercentOutput, -0.5);
           }
 
           if(elevatorZeroed && wristZeroed){
@@ -306,14 +267,14 @@ public class Elevator extends Subsystem {
             beastEle = true;
             RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0.0);
           } else {
-            RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0.7);
+            RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0.5);
           }
 
           if(isWristButtonPressed() || beastWrist) {
             beastWrist = true;
             RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0.0);
           } else {
-            RobotMap.wristControl.set(ControlMode.PercentOutput, -0.7);
+            RobotMap.wristControl.set(ControlMode.PercentOutput, -0.5);
           }
 
         } else {
@@ -390,6 +351,7 @@ public class Elevator extends Subsystem {
         // System.out.println(elevatorState.name() + " WRIST ENC " + RobotMap.wristControl.getSelectedSensorPosition(0) + " " + RobotMap.elevatorTop.getSelectedSensorPosition(0) + " " + elevatorState.getClawPosition() + " " + wristZeroed + " " + elevatorZeroed + " " + OI.getSecondaryBack());
         // System.out.println("WRIST BUTTON " + RobotMap.zeroThyWrist.get());
 
+        SmartDashboard.putNumber("Elevator Height", RobotMap.elevatorTop.getSelectedSensorPosition());
         SmartDashboard.putString("Elevator State", elevatorState.name());
         SmartDashboard.putBoolean("HATCH IN? ", isHatchIn());
         SmartDashboard.putBoolean("BALL IN? ", isForbiddenOrangeIn());
@@ -447,7 +409,7 @@ public class Elevator extends Subsystem {
 
   private static void runGroundHatchIntake(){
     RobotMap.intakeTop.set(ControlMode.PercentOutput, 0);
-    RobotMap.intakeBot.set(ControlMode.PercentOutput, 0.5);
+    RobotMap.intakeBot.set(ControlMode.PercentOutput, 0.64);
   }
 
   private static void runBallIntake(){
@@ -473,10 +435,6 @@ public class Elevator extends Subsystem {
   private static void runHumanHatchIntake(){
     RobotMap.intakeTop.set(ControlMode.PercentOutput, -0.65);
     RobotMap.intakeBot.set(ControlMode.PercentOutput, 0.65);
-  }
-
-  private static boolean isIntakingHatch(){
-    return elevatorState == ElevatorState.INTAKEHATCH || elevatorState == ElevatorState.INTAKEHATCH1 || elevatorState == ElevatorState.INTAKEHUMANHATCH;
   }
 
   private static boolean isIntakingOrange(){

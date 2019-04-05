@@ -22,6 +22,7 @@ public class Drive extends Subsystem {
   private static Drive instance;
   private LimelightVision limelightVision = LimelightVision.getInstance();
   private ParadoxTimer visionToggle = new ParadoxTimer();
+  private ParadoxTimer openLoopToggle = new ParadoxTimer();
   private boolean openLoop = false;
   private boolean fnatic = false; // open loop toggle thing
   public static Drive getInstance() {
@@ -76,13 +77,13 @@ public class Drive extends Subsystem {
           left = multiplier * (-straight - steering);
           right = multiplier * (straight - steering);
 
-          if(!OI.isPrimaryDPadPressed() && !fnatic) {
-            fnatic = true;
+          if(!OI.isPrimaryDPadPressed()) {
+            if(!openLoopToggle.isEnabled()) openLoopToggle.enableTimer(System.currentTimeMillis());
           }
 
-          if(OI.isPrimaryDPadPressed() && fnatic) {
+          if(OI.isPrimaryDPadPressed() && openLoopToggle.hasTimeHasPassed(800, System.currentTimeMillis())) {
             openLoop = false;
-            fnatic = false;
+            openLoopToggle.disableTimer();
           }
         } else {
           this.hPID.setSetpoint(Math.pow(OI.getPrimaryRightXAxis(), 3) * 400);

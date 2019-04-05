@@ -32,7 +32,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    CameraServer.getInstance().startAutomaticCapture();
+    // CameraServer.getInstance().startAutomaticCapture();
   }
 
   @Override
@@ -43,6 +43,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     Scheduler.getInstance().removeAll();
+    robotMap.resetSensors();
   }
 
   @Override
@@ -52,10 +53,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit(){
-    robotMap.resetSensors();
     drive.stopMoving();
     elevator.stopMoving();
     LimelightVision.setBlink(1);
+    robotMap.resetSensors();
   }
 
   @Override

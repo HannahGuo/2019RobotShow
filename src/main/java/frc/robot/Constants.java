@@ -6,7 +6,7 @@ package frc.robot;
 public class Constants {
     public static final double angP = 0.01;
     public static final double maxAngVel = 400; // 400 deg/sec cuz why not
-    public static final double limelightP = 0.025;
+    public static final double limelightP = 0.02;
 
     public static final int oneEncoderRotationNativeUnits = 4096; 
     public static final int pidMax = 1023;
