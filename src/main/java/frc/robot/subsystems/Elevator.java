@@ -8,7 +8,6 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -64,19 +63,19 @@ public class Elevator extends Subsystem {
     HOLDHATCH1(-3500, 10000, 17000, 200, true),
     HOLDHATCH2(-3500, 10000, 17000, 920, true),
 
-    INTAKE(-6000, 10000, 22000, 5240, false),
-    INTAKEBALLGROUND(-6000, 10000, 22000, 5240, false),
+    INTAKE(-6200, 10000, 22000, 5240, false),
+    INTAKEBALLGROUND(-6200, 10000, 22000, 5240, false),
     INTAKEBALLUP(-10075, 10000, 22000, 5240, false),
-    INTAKEHATCH(-6000, 10000, 22000, 5240, false),
+    INTAKEHATCH(-6200, 10000, 22000, 5240, false),
 
-    INTAKEHUMANHATCH(-5625, 10000, 15000, 4395, false),
-    INTAKEHATCH1(-10850, 10000, 15000, 4395, true),
+    INTAKEHUMANHATCH(-5425, 10000, 15000, 4185, false),
+    INTAKEHATCH1(-10850, 10000, 15000, 4185, true),
     // INTAKEHUMANBALL(-10025, 5000, 9000, 5240),
 
     CARGOBALL(-52983, 10000, 20000, 4800, false),
-    HATCH1(-8750, 10000, 39000, 4115, true),
-    HATCH2(-56000, 10000, 40000, 4115, true),
-    HATCH3(-95830, 10000, 41000, 4115, true),
+    HATCH1(-9200, 10000, 39000, 4195, true),
+    HATCH2(-55800, 10000, 40000, 4195, true),
+    HATCH3(-95930, 10000, 41000, 4195, true),
     BALL1(-21983, 10000, 39000, 4115, false),
     BALL2(-64900, 10000, 40000, 4115, false),
     BALL3(-97195, 10000, 41000, 3510, false);
@@ -136,6 +135,7 @@ public class Elevator extends Subsystem {
         // Y = LEVEL 3 (HATCH/BALL)
         // A + RIGHT TRIGGER = GROUND HATCH INTAKE
         // A + LEFT TRIGGER = GROUND BALL INTAKE
+        // A + LEFT BUMPER = ELEVATED BALL GROUND
         // B + RIGHT TRIGGER =  HUMAN PLAYER STATION INTAKE (RELEASE TRIGGER FOR STAGE 2)
         // B + RIGHT BUMPER = CARGO BALL
         // START = MANUAL
@@ -343,7 +343,7 @@ public class Elevator extends Subsystem {
             RobotMap.wristControl.configMotionAcceleration(CLAW_ACCEL);
             RobotMap.wristControl.set(ControlMode.MotionMagic, elevatorState.getClawPosition() - lowerHatch);
           } else {
-            RobotMap.wristControl.set(ControlMode.Current, 0.5);
+            RobotMap.wristControl.set(ControlMode.Current, 0.52);
           }
         }  
 

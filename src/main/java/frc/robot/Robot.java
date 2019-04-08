@@ -7,22 +7,16 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Elevator.ElevatorState;
 
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
-
   private static Drive drive = Drive.getInstance();
   private RobotMap robotMap = RobotMap.getInstance();
   private Elevator elevator = Elevator.getInstance();
@@ -32,7 +26,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    // CameraServer.getInstance().startAutomaticCapture();
+    CameraServer.getInstance().startAutomaticCapture();
   }
 
   @Override
@@ -42,7 +36,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    Scheduler.getInstance().removeAll();
+    // UNCOMMENT THESE LINES FOR COMPETITION
+    Scheduler.getInstance().removeAll(); 
     robotMap.resetSensors();
   }
 
@@ -56,15 +51,18 @@ public class Robot extends TimedRobot {
     drive.stopMoving();
     elevator.stopMoving();
     LimelightVision.setBlink(1);
-    robotMap.resetSensors();
+
+    // COMMENT THIS LINE FOR COMPETITION
+    // robotMap.resetSensors();
   }
 
   @Override
   public void teleopInit(){
     c.setClosedLoopControl(true);
-    // Scheduler.getInstance().removeAll();
     LimelightVision.setBlink(0);
-    // Elevator.elevatorState = ElevatorState.MANUAL; //UNCOMM
+
+    // UNCOMMENT THIS LINE FOR COMPETITION
+    Elevator.elevatorState = ElevatorState.MANUAL;
   }
 
   @Override

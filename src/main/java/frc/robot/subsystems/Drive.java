@@ -81,7 +81,7 @@ public class Drive extends Subsystem {
             if(!openLoopToggle.isEnabled()) openLoopToggle.enableTimer(System.currentTimeMillis());
           }
 
-          if(OI.isPrimaryDPadPressed() && openLoopToggle.hasTimeHasPassed(800, System.currentTimeMillis())) {
+          if(OI.isPrimaryDPadPressed() && openLoopToggle.isEnabled() && openLoopToggle.hasTimeHasPassed(800, System.currentTimeMillis())) {
             openLoop = false;
             openLoopToggle.disableTimer();
           }
