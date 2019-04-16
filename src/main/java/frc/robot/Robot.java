@@ -23,6 +23,7 @@ public class Robot extends TimedRobot {
   private OI oi = OI.getInstance();
   private Compressor c = new Compressor(0);
   private LimelightVision limelightVision = LimelightVision.getInstance();
+  private static boolean isCompMode = true;
 
   @Override
   public void robotInit() {
@@ -36,9 +37,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    // UNCOMMENT THESE LINES FOR COMPETITION
-    Scheduler.getInstance().removeAll(); 
-    robotMap.resetSensors();
+    if(isCompMode) {
+      Scheduler.getInstance().removeAll(); 
+      robotMap.resetSensors();
+    }
   }
 
   @Override
@@ -52,8 +54,7 @@ public class Robot extends TimedRobot {
     elevator.stopMoving();
     LimelightVision.setBlink(1);
 
-    // COMMENT THIS LINE FOR COMPETITION
-    // robotMap.resetSensors();
+    if(!isCompMode) robotMap.resetSensors();
   }
 
   @Override
@@ -61,8 +62,7 @@ public class Robot extends TimedRobot {
     c.setClosedLoopControl(true);
     LimelightVision.setBlink(0);
 
-    // UNCOMMENT THIS LINE FOR COMPETITION
-    Elevator.elevatorState = ElevatorState.MANUAL;
+    if(isCompMode) Elevator.elevatorState = ElevatorState.MANUAL;
   }
 
   @Override

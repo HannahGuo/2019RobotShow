@@ -76,10 +76,6 @@ public class OI {
         return primary.getRawButtonPressed(10);
     }
 
-    public static boolean getPrimaryStartReleased() {
-        return primary.getRawButtonReleased(10);
-    }
-
     public static boolean isPrimaryDPadPressed() {
         return primary.getPOV(0) != -1;
     }
@@ -141,12 +137,15 @@ public class OI {
         return secondary.getRawButton(10);
     }
 
+    public static boolean getSecondaryRightAxisButton() {
+        return secondary.getRawButton(12);
+    }
+
+    public static boolean getSecondaryRightAxisButtonPressed() {
+        return secondary.getRawButtonPressed(12);
+    }
+
     public static int getSecondaryDPad() {
         return secondary.getPOV(0);
     }
-
-    // Button testingButton = new JoystickButton(primary, 3);
-    // public OI(){
-    //     testingButton.whenActive(new PathfinderDrive());
-    // }
 }
