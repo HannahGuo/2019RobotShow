@@ -23,7 +23,7 @@ public class Robot extends TimedRobot {
   private OI oi = OI.getInstance();
   private Compressor c = new Compressor(0);
   private LimelightVision limelightVision = LimelightVision.getInstance();
-  private static boolean isCompMode = false;
+  private static boolean isCompMode = true;
 
   @Override
   public void robotInit() {

@@ -27,7 +27,7 @@ public class RobotMap {
     public static final TalonSRX wristControl = new TalonSRX(1);
 
     public static final Solenoid driveShifter = new Solenoid(0);
-    public static final Solenoid traumatizedGhosts = new Solenoid(1); // Frogs to the non-believers
+    public static final Solenoid traumatizedGhosts = new Solenoid(2); // Frogs to the non-believers
 
     public static final DigitalInput zeroThyElevator = new DigitalInput(0); // False = Pressed
     public static final DigitalInput zeroThyWrist = new DigitalInput(1); // False = Pressed
