@@ -10,8 +10,10 @@ package frc.robot;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.auto.CoachQadarGroup;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Elevator.ElevatorState;
@@ -23,16 +25,19 @@ public class Robot extends TimedRobot {
   private OI oi = OI.getInstance();
   private Compressor c = new Compressor(0);
   private LimelightVision limelightVision = LimelightVision.getInstance();
-  private static boolean isCompMode = true;
+  private static boolean isCompMode = false;
+  Command autonomousCommand;
 
   @Override
   public void robotInit() {
-    CameraServer.getInstance().startAutomaticCapture();
+    // CameraServer.getInstance().startAutomaticCapture();
   }
 
   @Override
   public void robotPeriodic() {
     limelightVision.updateVision();
+    SmartDashboard.putNumber("GYRO ANGLE", RobotMap.gyroSPI.getAbsoluteAngle());
+    SmartDashboard.putNumber("GYRO RATE", RobotMap.gyroSPI.getRate());
   }
 
   @Override
@@ -41,6 +46,8 @@ public class Robot extends TimedRobot {
       Scheduler.getInstance().removeAll(); 
       robotMap.resetSensors();
     }
+    autonomousCommand = new CoachQadarGroup();
+    if(autonomousCommand != null) autonomousCommand.start();
   }
 
   @Override
@@ -53,6 +60,7 @@ public class Robot extends TimedRobot {
     drive.stopMoving();
     elevator.stopMoving();
     LimelightVision.setBlink(1);
+    Scheduler.getInstance().removeAll();
 
     if(!isCompMode) robotMap.resetSensors();
   }
@@ -68,7 +76,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-    SmartDashboard.putNumber("GYRO ANGLE", RobotMap.gyroSPI.getAbsoluteAngle());
     // limelightVision.visionCalc();
   }
   

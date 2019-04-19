@@ -298,7 +298,6 @@ public class Elevator extends Subsystem {
         } else {
           updateLastIntakeItem();
 
-
           if(!(isHatchHeightMode() || isOrangeHeightMode()) && !isHoldMode()){
             if((isHatchIn() && elevatorState == ElevatorState.INTAKEHATCHGROUND) || (isHatchIn() && elevatorState == ElevatorState.INTAKEHUMANHATCH2)) {
               elevatorState = ElevatorState.HOLDHATCH1;
@@ -342,6 +341,8 @@ public class Elevator extends Subsystem {
 
           if(elevatorState != ElevatorState.INTAKEHUMANHATCH2 && elevatorState != ElevatorState.INTAKEHUMANHATCH1) humanHatchMode = false;
           
+          elevatorState = ElevatorState.MANUAL;
+
           RobotMap.traumatizedGhosts.set(elevatorState.getExtendGhosts());
 
           if(elevatorState != ElevatorState.INTAKEHUMANHATCH2 || (humanHatchIntakeTimer.hasTimeHasPassed(800, System.currentTimeMillis()) && elevatorState == ElevatorState.INTAKEHUMANHATCH2)) {

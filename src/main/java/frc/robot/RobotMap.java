@@ -67,7 +67,7 @@ public class RobotMap {
 
         driveRightTop.set(ControlMode.PercentOutput, 0.0);
         driveRightTop.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-        driveRightTop.setSensorPhase(false);
+        driveRightTop.setSensorPhase(true);
         driveRightTop.setNeutralMode(NeutralMode.Brake);
         driveRightTop.configVoltageCompSaturation(12.0, 10);
         driveRightTop.enableVoltageCompensation(true);
@@ -149,8 +149,12 @@ public class RobotMap {
         System.out.println("Elevator Outputs:" + elevatorTop.getSelectedSensorPosition());
     }
 
-    public static void getEncoderOutputs() {
-        System.out.println("Encoder outputs: " + driveLeftTop.getSelectedSensorPosition() + " " + driveRightTop.getSelectedSensorPosition());
+    public static void printDriveEncoderPositions() {
+        System.out.println("Drive Encoder positions: " + driveLeftTop.getSelectedSensorPosition() + " " + driveRightTop.getSelectedSensorPosition());
+    }
+    
+    public static void printDriveEncoderVelocitiess() {
+        System.out.println("Drive Encoder velocities: " + driveLeftTop.getSelectedSensorVelocity() + " " + driveRightTop.getSelectedSensorVelocity());
     }
 
     public static void getDriveCurrents(){

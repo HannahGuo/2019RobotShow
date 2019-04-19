@@ -4,7 +4,7 @@ package frc.robot;
  * Constants
  */
 public class Constants {
-    public static final double angP = 0.01;
+    public static final double angP = 0.009;
     public static final double maxAngVel = 400; // 400 deg/sec cuz why not
     public static final double limelightP = 0.02;
 
@@ -17,9 +17,11 @@ public class Constants {
     public static final double maxMPerSecond = feetToMeters(maxFtPerSecond);
 
     public static final double trackWidthInches = 26.26;
+    public static final double trackWidthFeet = inchesToFeet(trackWidthInches);
     public static final double trackWidthM = inchesToMeters(trackWidthInches);
     
     public static final double wheelDiameterIn = 6.2;
+    public static final double feetPerEncoderRev = 0.0;
     public static final double wheelDiameterM = inchesToMeters(wheelDiameterIn);
 
     public static double degToTicks(double degrees) {
@@ -32,5 +34,9 @@ public class Constants {
 
     public static double feetToMeters(double feet){
         return feet / 3.281;
+    }
+
+    public static double inchesToFeet(double inches){
+        return inches / 12.0;
     }
 }

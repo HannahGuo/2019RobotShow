@@ -1,6 +1,11 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.auto.DriveStraight;
+import frc.robot.auto.MotionMagicStraight;
+import frc.robot.auto.TuneAngle;
+import frc.robot.auto.TuneAngle2;
 
 public class OI {
     public static final Joystick primary = new Joystick(0); //Logitech Dual Action
@@ -148,4 +153,15 @@ public class OI {
     public static int getSecondaryDPad() {
         return secondary.getPOV(0);
     }
+
+    // JoystickButton testingButtonX = new JoystickButton(primary, 1);
+    // JoystickButton testingButtonY = new JoystickButton(primary, 4);
+    // JoystickButton testingButtonBack = new JoystickButton(primary, 9);
+    // JoystickButton testingButtonStart = new JoystickButton(primary, 10);
+    // public OI(){
+    //     testingButtonY.toggleWhenActive(new DriveStraight(-125000, 0, 4));
+    //     testingButtonBack.toggleWhenActive(new DriveStraight(0, 45, 2));
+    //     testingButtonStart.toggleWhenActive(new DriveStraight(-85000, 0, 3));
+    //     testingButtonX.toggleWhenActive(new DriveStraight(0, -45, 2));
+    // }
 }

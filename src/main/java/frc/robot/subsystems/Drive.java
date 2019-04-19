@@ -42,7 +42,7 @@ public class Drive extends Subsystem {
 
       protected void initialize() {
         this.hPID.reset();
-				this.hPID.setPID(0.01, 0.0002, 0);
+        this.hPID.setPID(Constants.angP, 0.0002, 0.0);
         System.out.println("Starting " + this.getName());
       }
 
@@ -86,7 +86,7 @@ public class Drive extends Subsystem {
             openLoopToggle.disableTimer();
           }
         } else {
-          this.hPID.setSetpoint(Math.pow(OI.getPrimaryRightXAxis(), 3) * 400);
+          this.hPID.setSetpoint(Math.pow(OI.getPrimaryRightXAxis(), 3) * 1400);
           steering = this.hPID.calculate(RobotMap.gyroSPI.getRate());
           
           if(-0.1 < straight && 0.1 > straight) straight = 0.0;
@@ -95,6 +95,9 @@ public class Drive extends Subsystem {
           left = multiplier * (-straight - steering);
           right = multiplier * (straight - steering);
         }
+
+        RobotMap.printDriveEncoderPositions();
+        RobotMap.printDriveEncoderVelocitiess();
         
         SmartDashboard.putNumber("STEERING", steering);
         SmartDashboard.putNumber("GYRO RATE", RobotMap.gyroSPI.getRate());
@@ -129,6 +132,14 @@ public class Drive extends Subsystem {
   public void resetDriveEncoders(){
     RobotMap.driveLeftTop.setSelectedSensorPosition(0);
     RobotMap.driveRightTop.setSelectedSensorPosition(0);
+  }
+
+  public static double getAverageDrivePosition(){
+    return (RobotMap.driveLeftTop.getSelectedSensorPosition(0) + RobotMap.driveRightTop.getSelectedSensorPosition(0)) / 2;
+  }
+
+  public static double getAverageDriveVelocity(){
+    return (RobotMap.driveLeftTop.getSelectedSensorVelocity(0) + RobotMap.driveRightTop.getSelectedSensorVelocity(0)) / 2;
   }
   
   public static void stopMoving() {
