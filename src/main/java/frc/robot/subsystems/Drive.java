@@ -96,8 +96,8 @@ public class Drive extends Subsystem {
           right = multiplier * (straight - steering);
         }
 
-        RobotMap.printDriveEncoderPositions();
-        RobotMap.printDriveEncoderVelocitiess();
+        // RobotMap.printDriveEncoderPositions();
+        // RobotMap.printDriveEncoderVelocitiess();
         
         SmartDashboard.putNumber("STEERING", steering);
         SmartDashboard.putNumber("GYRO RATE", RobotMap.gyroSPI.getRate());

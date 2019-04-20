@@ -8,9 +8,11 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.LimelightVision;
 import frc.robot.OI;
 import frc.robot.ParadoxTimer;
@@ -19,15 +21,15 @@ import frc.robot.RobotMap;
 public class Elevator extends Subsystem {
   private static Elevator instance;
 
-  private static final int CLAW_VEL = 900;
-  private static final int CLAW_ACCEL = 2200;
+  public static final int CLAW_VEL = 900;
+  public static final int CLAW_ACCEL = 2200;
 
   public static ElevatorState elevatorState = ElevatorState.ZERO;
   private static ElevatorState lastState = ElevatorState.ZERO;
   private static String lastIntakeItem = "HATCH";
   
-  private static boolean elevatorZeroed = false;
-  private static boolean wristZeroed = false; 
+  public static boolean elevatorZeroed = false;
+  public static boolean wristZeroed = false; 
   private static boolean holdGroundMode = false;
   private static boolean humanHatchMode = false;
   private static boolean lockWristToggle = false;
@@ -37,8 +39,8 @@ public class Elevator extends Subsystem {
   private static boolean beastEle = false;
   private static boolean beastWrist = false;
 
-  private static int lowerHatch = 0;
-  private static int HATCH_OUTTAKE_CONSTANT = -1500;
+  public static int lowerHatch = 0;
+  public static int HATCH_OUTTAKE_CONSTANT = -1500;
 
   private static ParadoxTimer ballIntakeTimer = new ParadoxTimer();
   private static ParadoxTimer hatchTimer = new ParadoxTimer();
@@ -72,7 +74,6 @@ public class Elevator extends Subsystem {
 
     INTAKEHUMANHATCH1(-4925, 10000, 15000, 4185, false),
     INTAKEHUMANHATCH2(-10850, 10000, 15000, 4185, true),
-    // INTAKEHUMANBALL(-10025, 5000, 9000, 5240),
 
     CARGOBALL(-52983, 10000, 20000, 4800, false),
     HATCH1(-9350, 10000, 39000, 4195, true),
@@ -96,23 +97,23 @@ public class Elevator extends Subsystem {
       this.extendGhosts = extendGhosts;
     }
 
-    private int getElevatorHeight() {
+    public int getElevatorHeight() {
       return elevatorHeight;
     }
 
-    private int getVel(){
+    public int getVel(){
       return vel;
     }
 
-    private int getAccel() {
+    public int getAccel() {
       return accel;
     }
 
-    private int getClawPosition(){
+    public int getClawPosition(){
       return clawPosition;
     }
 
-    private boolean getExtendGhosts(){
+    public boolean getExtendGhosts(){
       return extendGhosts;
     }
   }
@@ -200,7 +201,7 @@ public class Elevator extends Subsystem {
             elevatorState = ElevatorState.CARGOBALL;
           } 
 
-          if(!OI.getPrimaryRT()){
+          if(!OI.getPrimaryRT() && !DriverStation.getInstance().isAutonomous()){
             lowerHatch = 0;
             stopIntakeWheels();
           }
@@ -306,9 +307,9 @@ public class Elevator extends Subsystem {
             }
           }
 
-          holdGroundMode = isWithinThreshold(RobotMap.wristControl.getSelectedSensorPosition(), elevatorState.getClawPosition() - 175, elevatorState.getClawPosition() + 175) && isGroundIntakeMode();
+          holdGroundMode = Constants.isWithinThreshold(RobotMap.wristControl.getSelectedSensorPosition(), elevatorState.getClawPosition() - 175, elevatorState.getClawPosition() + 175) && isGroundIntakeMode();
           
-          if(isWithinThreshold(RobotMap.wristControl.getSelectedSensorPosition(0), elevatorState.getClawPosition() - 200, elevatorState.getClawPosition() + 200) && elevatorState == ElevatorState.HOLDHATCH1) elevatorState = ElevatorState.HOLDHATCH2;
+          if(Constants.isWithinThreshold(RobotMap.wristControl.getSelectedSensorPosition(0), elevatorState.getClawPosition() - 200, elevatorState.getClawPosition() + 200) && elevatorState == ElevatorState.HOLDHATCH1) elevatorState = ElevatorState.HOLDHATCH2;
 
           if(isForbiddenOrangeIn() && !ballIntakeTimer.isEnabled() && isIntakingOrange()) ballIntakeTimer.enableTimer(System.currentTimeMillis());
 
@@ -332,7 +333,6 @@ public class Elevator extends Subsystem {
           } else if((isOrangeHeightMode() || elevatorState == ElevatorState.HOLDDEF || elevatorState == ElevatorState.CARGOBALL) && OI.getSecondaryLT()) {
             runBallIntake();
           } else if((!isHatchHeightMode() && !isOrangeHeightMode() && elevatorState != ElevatorState.CARGOBALL) || isHoldMode()) {
-            // stopIntakeWheels();
             humanHatchIntakeTimer.disableTimer();
           } else {
             ballIntakeTimer.disableTimer();
@@ -340,8 +340,6 @@ public class Elevator extends Subsystem {
           }
 
           if(elevatorState != ElevatorState.INTAKEHUMANHATCH2 && elevatorState != ElevatorState.INTAKEHUMANHATCH1) humanHatchMode = false;
-          
-          elevatorState = ElevatorState.MANUAL;
 
           RobotMap.traumatizedGhosts.set(elevatorState.getExtendGhosts());
 
@@ -421,12 +419,8 @@ public class Elevator extends Subsystem {
     return !RobotMap.forbiddenOrange.get();
   }
 
-  private static boolean isHatchIn(){
+  public static boolean isHatchIn(){
     return !RobotMap.hatchDetector.get();
-  }
-
-  private static boolean isWithinThreshold(double val, int minThresh, int maxThresh) {
-    return minThresh <= val && val <= maxThresh;
   }
 
   private static void runGroundHatchIntake(){
@@ -444,12 +438,12 @@ public class Elevator extends Subsystem {
     RobotMap.intakeBot.set(ControlMode.PercentOutput, 1.0);
   }
 
-  private static void stopIntakeWheels(){
+  public static void stopIntakeWheels(){
     RobotMap.intakeTop.set(ControlMode.PercentOutput, 0.0);
     RobotMap.intakeBot.set(ControlMode.PercentOutput, 0.0);
   }
 
-  private static void runHatchOuttake(){
+  public static void runHatchOuttake(){
     RobotMap.intakeTop.set(ControlMode.PercentOutput, 0.6);
     RobotMap.intakeBot.set(ControlMode.PercentOutput, -0.75);
   }

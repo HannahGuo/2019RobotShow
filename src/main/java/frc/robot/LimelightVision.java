@@ -23,12 +23,12 @@ public class LimelightVision {
         table = NetworkTableInstance.getDefault().getTable("limelight");
     } 
 
-    public void updateVision(){
+    public static void updateVision(){
         table = NetworkTableInstance.getDefault().getTable("limelight");
         SmartDashboard.putNumber("Horizontal Offset", getHorizontalOffset());
         SmartDashboard.putNumber("Vertical Offset", getVerticalOffset());
         SmartDashboard.putNumber("Skew", getSkew());
-        SmartDashboard.putNumber("Distance", getDistance());
+        SmartDashboard.putNumber("Target Area", getTargetArea());
         SmartDashboard.putBoolean("Has targets?", isTargetVisible());
     }
 
@@ -69,7 +69,7 @@ public class LimelightVision {
     }
 
     public static void setBlink(int blink) {
-        // 1 --> Force off, 2 --> Force, 3 --> Force on
+        // 1 --> Force off, 2 --> Force Blink, 3 --> Force on
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(blink);
     }
 }

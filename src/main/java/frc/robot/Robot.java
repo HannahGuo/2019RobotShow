@@ -42,6 +42,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    Elevator.wristZeroed = false;
+    Elevator.elevatorZeroed = false;
     if(isCompMode) {
       Scheduler.getInstance().removeAll(); 
       robotMap.resetSensors();
@@ -53,6 +55,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
+    LimelightVision.setCamMode(0);
   }
 
   @Override

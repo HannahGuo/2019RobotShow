@@ -1,3 +1,4 @@
+    
 /*----------------------------------------------------------------------------*/
 /* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
@@ -10,45 +11,49 @@ package frc.robot.auto;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.Constants;
 import frc.robot.LimelightVision;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.Drive;
 
-public class LimeLightDrive extends Command {
+public class LimeLightAlignDrive extends Command {
   private Drive drive;
-  private double targetAngle;
+  private LimelightVision limelightVision;
+  private double target;
+  private static double angleError;
 
-  public LimeLightDrive() {
+  public LimeLightAlignDrive() {
     this.drive = Drive.getInstance();
+    this.limelightVision = LimelightVision.getInstance();
     requires(drive);
   }
 
   @Override
   protected void initialize() {
-    drive = Drive.getInstance();
+    RobotMap.gyroSPI.reset();
   }
 
   @Override
   protected void execute() {
-    if(LimelightVision.isTargetVisible()) {
+    limelightVision.updateVision();
+    LimelightVision.setCamMode(0);
+    if(limelightVision.isTargetVisible()) {
+      RobotMap.driveLeftTop.set(ControlMode.PercentOutput, 0.2);
+      RobotMap.driveRightTop.set(ControlMode.PercentOutput, -0.2);
     }
-    RobotMap.driveLeftTop.set(ControlMode.MotionMagic, 10000);    
-    RobotMap.driveRightTop.set(ControlMode.MotionMagic, 10000);    
   }
 
   @Override
   protected boolean isFinished() {
-    return false;
+    return limelightVision.getTargetArea() > 4.7;
   }
 
   @Override
   protected void end() {
-    drive.stopMoving();
+    System.out.println("LIMELIGHT VISION FINISHED");
+    Drive.stopMoving();
   }
 
   @Override
   protected void interrupted() {
-    System.out.println(this.getName() + " was interrupted.");
   }
 }
