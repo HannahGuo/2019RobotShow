@@ -38,7 +38,7 @@ public class TuneAngle extends Command {
     }
 
     protected void end() {
-      this.drive.stopMoving();
+      Drive.stopMoving();
       System.out.println("Angle Achieved " + RobotMap.gyroSPI.getAbsoluteAngle());
     }
 

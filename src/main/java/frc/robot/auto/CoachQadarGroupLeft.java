@@ -12,25 +12,25 @@ import edu.wpi.first.wpilibj.command.WaitCommand;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Elevator.ElevatorState;
 
-public class CoachQadarGroup extends CommandGroup {
-  public CoachQadarGroup() {
-    addSequential(new DriveStraight(-125000, ElevatorState.ZERO));
-    addSequential(new TurnToAngle(30));
+public class CoachQadarGroupLeft extends CommandGroup {
+  public CoachQadarGroupLeft() {
+    addSequential(new DriveStraight(-138000, ElevatorState.ZERO));
+    addSequential(new TurnToAngle(-30));
     // addSequential(new DriveStraight(-85000));
     // addSequential(new TurnToAngle(-40));
     addSequential(new DriveStraight(-205000));
-    addSequential(new TurnToAngle(-59));
+    addSequential(new TurnToAngle(59, 1.2));
     addSequential(new DriveStraight(-11000));
-    addSequential(new DriveStraight(0, ElevatorState.HATCH3));
+    addSequential(new DriveStraight(0, ElevatorState.HATCH1));
     addSequential(new LimeLightAlign());
     addSequential(new LimeLightAlign());
     addSequential(new LimeLightAlign());
     addSequential(new LimeLightAlignDrive());
-    addSequential(new DriveStraight(0, ElevatorState.HATCH3, true));
+    addSequential(new DriveStraight(0, ElevatorState.HATCH1, true));
     Elevator.elevatorState = ElevatorState.HOLDDEF;
     addSequential(new WaitCommand(0.3));
     addSequential(new DriveStraight(-20000));
-    addSequential(new TurnToAngle(50));
+    addSequential(new TurnToAngle(-50));
     // addSequential(new Outtake());
     // Add Commands here:
     // e.g. addSequential(new Command1());

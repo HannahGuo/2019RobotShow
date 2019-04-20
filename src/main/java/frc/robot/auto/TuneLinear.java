@@ -39,7 +39,7 @@ public class TuneLinear extends Command {
 
     protected void end() {
     	this.vPID.reset();
-    	this.drive.stopMoving();
+    	Drive.stopMoving();
     }
 
     protected void interrupted() {

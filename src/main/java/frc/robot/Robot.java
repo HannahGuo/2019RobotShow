@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.auto.CoachQadarGroup;
+import frc.robot.auto.CoachQadarGroupLeft;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Elevator.ElevatorState;
@@ -48,14 +48,14 @@ public class Robot extends TimedRobot {
       Scheduler.getInstance().removeAll(); 
       robotMap.resetSensors();
     }
-    autonomousCommand = new CoachQadarGroup();
+    autonomousCommand = new CoachQadarGroupLeft();
     if(autonomousCommand != null) autonomousCommand.start();
   }
 
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
-    LimelightVision.setCamMode(0);
+    // LimelightVision.setCamMode(0);
   }
 
   @Override

@@ -12,6 +12,7 @@ public class TurnToAngle extends Command {
 	private Drive drive;
 	private SynchronousPID vPID, hPID;
 	private double heading = 0;
+	private double timeout = 0.0;
 	
     public TurnToAngle(double head) {
 		this.drive = Drive.getInstance();
@@ -20,7 +21,20 @@ public class TurnToAngle extends Command {
     	this.hPID = new SynchronousPID();
 		this.hPID.setOutputRange(-1.0, 1.0);
 		heading = head;
+		this.timeout = 0.0;
 		requires(this.drive);
+	}
+	
+	public TurnToAngle(double head, double timeout) {
+		this.drive = Drive.getInstance();
+		this.vPID = new SynchronousPID();
+    	this.vPID.setOutputRange(-1.0, 1.0);
+    	this.hPID = new SynchronousPID();
+		this.hPID.setOutputRange(-1.0, 1.0);
+		heading = head;
+		requires(this.drive);
+		this.timeout = timeout;
+		setTimeout(this.timeout);
     }
 
     protected void initialize() {
@@ -39,8 +53,8 @@ public class TurnToAngle extends Command {
     	this.hPID.setSetpoint((heading - RobotMap.gyroSPI.getAbsoluteAngle()) * 10);
         double head = hPID.calculate(RobotMap.gyroSPI.getRate());
 
-    	RobotMap.driveLeftTop.set(ControlMode.PercentOutput, 0.8 *  (-vel - head));
-		RobotMap.driveRightTop.set(ControlMode.PercentOutput, 0.8 * (vel - head));
+    	RobotMap.driveLeftTop.set(ControlMode.PercentOutput, -vel - head);
+		RobotMap.driveRightTop.set(ControlMode.PercentOutput, vel - head);
 		// System.out.println("GYRO ANGLE " + RobotMap.gyroSPI.getAbsoluteAngle());
 		System.out.println("ERROR ANGLE" + this.hPID.getError());
 		// System.out.println("Average Enc Position " + Drive.getAverageDrivePosition());
@@ -50,14 +64,15 @@ public class TurnToAngle extends Command {
     }
 
     protected boolean isFinished() {
-        return (this.hPID.getError() >= -1.2 && this.hPID.getError() <= 1.2);
+        return ((this.hPID.getError() >= -1.2 && this.hPID.getError() <= 1.2) || (this.timeout != 0.0 && isTimedOut()));
     }
 
     protected void end() {
     	// this.vPID.reset();
 		// this.hPID.reset();
 		System.out.println("TURN COMMAND FINISHED");
-    	this.drive.stopMoving();
+		Drive.stopMoving();
+		this.timeout = 0.0;
     }
 
     protected void interrupted() {

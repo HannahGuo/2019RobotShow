@@ -59,15 +59,6 @@ public class LimelightVision {
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(camMode);
     }
 
-    public static double getDistance(){
-        double a1 = 0.0;
-        double a2 = getVerticalOffset();
-        double h1 = 41.5; //inches
-        double h2 = 29.0; //inches
-        
-        return (h2 - h1) / Math.tan(a1 + a2);
-    }
-
     public static void setBlink(int blink) {
         // 1 --> Force off, 2 --> Force Blink, 3 --> Force on
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(blink);

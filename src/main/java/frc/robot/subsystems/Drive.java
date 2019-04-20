@@ -20,7 +20,6 @@ import frc.robot.SynchronousPID;
 
 public class Drive extends Subsystem {
   private static Drive instance;
-  private LimelightVision limelightVision = LimelightVision.getInstance();
   private ParadoxTimer visionToggle = new ParadoxTimer();
   private ParadoxTimer openLoopToggle = new ParadoxTimer();
   private static boolean openLoop = false;
@@ -54,18 +53,18 @@ public class Drive extends Subsystem {
         }
 
         if(OI.getPrimaryRB()) {
-          limelightVision.setCamMode(0);
+          LimelightVision.setCamMode(0);
           if(!visionToggle.isEnabled()) {
             visionToggle.enableTimer(System.currentTimeMillis());
           }
         } else {
-          limelightVision.setCamMode(1);
+          LimelightVision.setCamMode(1);
           visionToggle.disableTimer();
         }
 
-        if(OI.getPrimaryRB() && limelightVision.isTargetVisible() && limelightVision.getHorizontalOffset() != 0.0 && visionToggle.hasTimeHasPassed(800, System.currentTimeMillis())){
-          limelightVision.updateVision();
-          steering = limelightVision.getHorizontalOffset() * Constants.limelightP;  
+        if(OI.getPrimaryRB() && LimelightVision.isTargetVisible() && LimelightVision.getHorizontalOffset() != 0.0 && visionToggle.hasTimeHasPassed(800, System.currentTimeMillis())){
+          LimelightVision.updateVision();
+          steering = LimelightVision.getHorizontalOffset() * Constants.limelightP;  
           left = multiplier * (-straight - steering);
           right = multiplier * (straight - steering);
         } else if(openLoop) {

@@ -18,13 +18,11 @@ import frc.robot.subsystems.Drive;
 
 public class LimeLightAlign extends Command {
   private Drive drive;
-  private LimelightVision limelightVision;
-  private static double angleError;
 
   public LimeLightAlign() {
     this.drive = Drive.getInstance();
     requires(drive);
-    setTimeout(0.2);
+    setTimeout(0.4);
   }
 
   @Override
@@ -36,17 +34,18 @@ public class LimeLightAlign extends Command {
     LimelightVision.updateVision();
     LimelightVision.setCamMode(0);
 
-    if(limelightVision.isTargetVisible()) {
-      RobotMap.driveLeftTop.set(ControlMode.PercentOutput, 0.5 * -limelightVision.getHorizontalOffset() * Constants.limelightP);
-      RobotMap.driveRightTop.set(ControlMode.PercentOutput, 0.5 * -limelightVision.getHorizontalOffset() * Constants.limelightP);
+    if(LimelightVision.isTargetVisible()) {
+      RobotMap.driveLeftTop.set(ControlMode.PercentOutput, 0.4 * -LimelightVision.getHorizontalOffset() * Constants.limelightP);
+      RobotMap.driveRightTop.set(ControlMode.PercentOutput, 0.4 * -LimelightVision.getHorizontalOffset() * Constants.limelightP);
 
-      System.out.println("ALIGN " + limelightVision.getHorizontalOffset() + " " + (-limelightVision.getHorizontalOffset() * Constants.limelightP));
+      System.out.println("ALIGN " + LimelightVision.getHorizontalOffset() + " " + (-LimelightVision.getHorizontalOffset() * Constants.limelightP));
     }
   }
 
   @Override
   protected boolean isFinished() {
-    return (limelightVision.isTargetVisible() && (limelightVision.getHorizontalOffset() <= 2.7 && limelightVision.getHorizontalOffset() >= -2.7)) || isTimedOut();
+    System.out.println("LIMELIGHT OFFSET = " + LimelightVision.getHorizontalOffset());
+    return (LimelightVision.isTargetVisible() && (LimelightVision.getHorizontalOffset() <= 1.0 && LimelightVision.getHorizontalOffset() >= -1.0)) || isTimedOut();
   }
 
   @Override

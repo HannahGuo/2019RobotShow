@@ -4,7 +4,7 @@ package frc.robot;
  * Constants
  */
 public class Constants {
-    public static final double angP = 0.0113;
+    public static final double angP = 0.0115;
     public static final double maxAngVel = 400; // 400 deg/sec cuz why not
     public static final double limelightP = 0.08;
 

@@ -17,13 +17,9 @@ import frc.robot.subsystems.Drive;
 
 public class LimeLightAlignDrive extends Command {
   private Drive drive;
-  private LimelightVision limelightVision;
-  private double target;
-  private static double angleError;
 
   public LimeLightAlignDrive() {
     this.drive = Drive.getInstance();
-    this.limelightVision = LimelightVision.getInstance();
     requires(drive);
   }
 
@@ -34,9 +30,9 @@ public class LimeLightAlignDrive extends Command {
 
   @Override
   protected void execute() {
-    limelightVision.updateVision();
+    LimelightVision.updateVision();
     LimelightVision.setCamMode(0);
-    if(limelightVision.isTargetVisible()) {
+    if(LimelightVision.isTargetVisible()) {
       RobotMap.driveLeftTop.set(ControlMode.PercentOutput, 0.2);
       RobotMap.driveRightTop.set(ControlMode.PercentOutput, -0.2);
     }
@@ -44,7 +40,7 @@ public class LimeLightAlignDrive extends Command {
 
   @Override
   protected boolean isFinished() {
-    return limelightVision.getTargetArea() > 4.7;
+    return LimelightVision.getTargetArea() > 3.65;
   }
 
   @Override

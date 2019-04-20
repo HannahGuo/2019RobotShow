@@ -43,7 +43,7 @@ public class TuneAngle2 extends Command {
 
   @Override
   protected void end() {
-    drive.stopMoving();
+    Drive.stopMoving();
   }
 
   @Override

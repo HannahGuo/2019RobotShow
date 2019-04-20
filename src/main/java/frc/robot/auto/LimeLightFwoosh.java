@@ -15,42 +15,43 @@ import frc.robot.Constants;
 import frc.robot.LimelightVision;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.Drive;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Elevator.ElevatorState;
 
-public class Outtake extends Command {
-  private Elevator elevator;
+public class LimeLightFwoosh extends Command {
+  private Drive drive;
 
-  public Outtake() {
-    this.elevator = Elevator.getInstance();
-    requires(this.elevator);
-    setTimeout(1.0);
+  public LimeLightFwoosh() {
+    this.drive = Drive.getInstance();
+    requires(drive);
+    setTimeout(0.2);
   }
 
   @Override
   protected void initialize() {
-    
   }
 
   @Override
   protected void execute() {
-    RobotMap.elevatorTop.configMotionCruiseVelocity(ElevatorState.HATCH3.getVel(), 10);
-    RobotMap.elevatorTop.configMotionAcceleration(ElevatorState.HATCH3.getAccel(), 10);
-    RobotMap.elevatorTop.set(ControlMode.MotionMagic, ElevatorState.HATCH3.getElevatorHeight()); 
-    RobotMap.wristControl.configMotionCruiseVelocity(Elevator.CLAW_VEL);
-    RobotMap.wristControl.configMotionAcceleration(Elevator.CLAW_ACCEL);
-    RobotMap.wristControl.set(ControlMode.MotionMagic, Elevator.elevatorState.getClawPosition() + 1500);
-    Elevator.runHatchOuttake();
+    LimelightVision.updateVision();
+    LimelightVision.setCamMode(0);
+
+    if(LimelightVision.isTargetVisible()) {
+      double head = LimelightVision.getHorizontalOffset() * Constants.limelightP;
+      double vel = -0.2;
+      RobotMap.driveLeftTop.set(ControlMode.PercentOutput, -vel - head);
+      RobotMap.driveRightTop.set(ControlMode.PercentOutput, vel - head);
+
+      System.out.println("ALIGN " + LimelightVision.getHorizontalOffset() + " " + (-LimelightVision.getHorizontalOffset() * Constants.limelightP));
+    }
   }
 
   @Override
   protected boolean isFinished() {
-    return isTimedOut();
+    return LimelightVision.isTargetVisible() && LimelightVision.getTargetArea() > 3.65;
   }
 
   @Override
   protected void end() {
-    System.out.println("OUTTOOK FINISHED");
+    System.out.println("LIMELIGHT VISION FWWOOSH FINISHED");
   }
 
   @Override

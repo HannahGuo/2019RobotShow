@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.auto.LimeLightAlign;
+import frc.robot.auto.LimeLightFwoosh;
 
 public class OI {
     public static final Joystick primary = new Joystick(0); //Logitech Dual Action
@@ -159,6 +160,6 @@ public class OI {
         // testingButtonY.toggleWhenActive(new DriveStraight(-125000, 0, 4));
         // testingButtonBack.toggleWhenActive(new DriveStraight(0, 45, 2));
         // testingButtonStart.toggleWhenActive(new DriveStraight(-85000, 0, 3));
-        testingButtonX.toggleWhenActive(new LimeLightAlign());
+        testingButtonX.toggleWhenActive(new LimeLightFwoosh());
     }
 }
