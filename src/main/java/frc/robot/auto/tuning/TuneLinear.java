@@ -1,4 +1,4 @@
-package frc.robot.auto;
+package frc.robot.auto.tuning;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.RobotMap;

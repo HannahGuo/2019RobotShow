@@ -1,4 +1,4 @@
-package frc.robot.auto;
+package frc.robot.auto.tuning;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Constants;
@@ -22,10 +22,11 @@ public class TuneAngle extends Command {
 
     protected void initialize() {
       RobotMap.gyroSPI.reset();
-      drive.resetDriveEncoders();
-      this.hPID.setPID(Constants.angP, 0.0, 0);
+      Drive.resetDriveEncoders();
+      this.hPID.setPID(Constants.angPID);
       this.hPID.reset();
       this.hPID.setSetpoint(this.angleSetpoint);
+      Drive.setLowGear();
     }
    
     protected void execute() {    

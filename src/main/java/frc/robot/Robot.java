@@ -1,10 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
@@ -12,8 +5,10 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.auto.CoachQadarGroupLeft;
+import frc.robot.auto.paths.LeftFarRocket;
+import frc.robot.auto.paths.RightFarRocket;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Elevator.ElevatorState;
@@ -23,63 +18,72 @@ public class Robot extends TimedRobot {
   private RobotMap robotMap = RobotMap.getInstance();
   private Elevator elevator = Elevator.getInstance();
   private OI oi = OI.getInstance();
-  private Compressor c = new Compressor(0);
   private LimelightVision limelightVision = LimelightVision.getInstance();
-  private static boolean isCompMode = false;
-  Command autonomousCommand;
+  private Compressor c = new Compressor(0);
+  Command[] autonomousCommandsOptionRocket = new Command[] {new LeftFarRocket(), new RightFarRocket()};
+  Command autoCommand;
+  public static boolean runAuto = false;
+  SendableChooser<Integer> autoChooser;
 
   @Override
   public void robotInit() {
-    // CameraServer.getInstance().startAutomaticCapture();
+    CameraServer.getInstance().startAutomaticCapture();
+    autoChooser = new SendableChooser<Integer>();
+    autoChooser.setDefaultOption("MANUAL", 2);
+    autoChooser.addOption("LEFT FAR ROCKET", 0);
+    autoChooser.addOption("RIGHT FAR ROCKET", 1);
+    SmartDashboard.putData("Auto Mode Chooser", autoChooser);
+    runAuto = false;
   }
 
   @Override
   public void robotPeriodic() {
-    limelightVision.updateVision();
+    LimelightVision.updateVision();
     SmartDashboard.putNumber("GYRO ANGLE", RobotMap.gyroSPI.getAbsoluteAngle());
     SmartDashboard.putNumber("GYRO RATE", RobotMap.gyroSPI.getRate());
+    SmartDashboard.putString("DRIVE GEAR", RobotMap.driveShifter.get() ? "HIGH" : "LOW");
   }
 
   @Override
   public void autonomousInit() {
-    Elevator.wristZeroed = false;
-    Elevator.elevatorZeroed = false;
-    if(isCompMode) {
-      Scheduler.getInstance().removeAll(); 
-      robotMap.resetSensors();
+    LimelightVision.turnOn();
+    RobotMap.makePDPWork();
+    Elevator.elevatorState = ElevatorState.ZERO;
+    if(autoChooser.getSelected() != 2) runAuto = true;
+    if(runAuto) {
+      autoCommand = autonomousCommandsOptionRocket[autoChooser.getSelected()];
+      if(autoCommand != null) autoCommand.start();
     }
-    autonomousCommand = new CoachQadarGroupLeft();
-    if(autonomousCommand != null) autonomousCommand.start();
   }
 
   @Override
   public void autonomousPeriodic() {
-    Scheduler.getInstance().run();
-    // LimelightVision.setCamMode(0);
+    if(!Robot.runAuto) Scheduler.getInstance().run();
   }
 
   @Override
   public void disabledInit(){
-    drive.stopMoving();
-    elevator.stopMoving();
-    LimelightVision.setBlink(1);
     Scheduler.getInstance().removeAll();
 
-    if(!isCompMode) robotMap.resetSensors();
+    Drive.stopMoving();
+    Elevator.stopMoving();
+    LimelightVision.turnOff();
+    RobotMap.makePDPWork();
   }
 
   @Override
   public void teleopInit(){
-    c.setClosedLoopControl(true);
-    LimelightVision.setBlink(0);
+    if(runAuto) Scheduler.getInstance().removeAll();
+    else Elevator.elevatorState = ElevatorState.MANUAL;
 
-    if(isCompMode) Elevator.elevatorState = ElevatorState.MANUAL;
+    c.setClosedLoopControl(true);
+    LimelightVision.turnOn();
+    Drive.stopMoving();
   }
 
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-    // limelightVision.visionCalc();
   }
   
   @Override

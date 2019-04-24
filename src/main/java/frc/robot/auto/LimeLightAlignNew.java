@@ -4,48 +4,45 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Constants;
+import frc.robot.LimelightVision;
 import frc.robot.RobotMap;
 import frc.robot.SynchronousPID;
 import frc.robot.subsystems.Drive;
 
-public class TurnToAngle extends Command {
+public class LimeLightAlignNew extends Command {
 	private Drive drive;
 	private SynchronousPID vPID, hPID;
 	private double heading = 0;
-	private boolean timeOut = false;
+	private double offset = 0.0;
 	
-    public TurnToAngle(double head) {
-			this.timeOut = false;
+    public LimeLightAlignNew() {
 		this.drive = Drive.getInstance();
 		this.vPID = new SynchronousPID();
     	this.vPID.setOutputRange(-1.0, 1.0);
     	this.hPID = new SynchronousPID();
 		this.hPID.setOutputRange(-1.0, 1.0);
-		heading = head;
 		requires(this.drive);
 	}
 
-	
-	public TurnToAngle(double head, boolean timeOut) {
+	public LimeLightAlignNew(double offset) {
 		this.drive = Drive.getInstance();
 		this.vPID = new SynchronousPID();
-		this.vPID.setOutputRange(-1.0, 1.0);
-		this.hPID = new SynchronousPID();
+    	this.vPID.setOutputRange(-1.0, 1.0);
+    	this.hPID = new SynchronousPID();
 		this.hPID.setOutputRange(-1.0, 1.0);
-		this.timeOut = timeOut;
-		heading = head;
+		this.offset = offset;
 		requires(this.drive);
 	}
 	
     protected void initialize() {
 		RobotMap.gyroSPI.reset();
 		this.vPID.reset();
-    	this.vPID.setPID(Constants.linPIDLowGear);
-    	this.hPID.reset();
+		this.vPID.setPID(Constants.linPIDLowGear);
+		this.hPID.reset();
 		this.hPID.setPID(Constants.angPID);
 		Drive.resetDriveEncoders();
-		RobotMap.driveShifter.set(false);
-		if(this.timeOut) setTimeout(0.5);
+		this.heading = LimelightVision.getHorizontalOffset() + this.offset;
+		setTimeout(0.5);
     }
    
     protected void execute() {
@@ -53,22 +50,20 @@ public class TurnToAngle extends Command {
     	this.vPID.setSetpoint((Drive.getAverageDrivePosition()));
     	double vel = vPID.calculate(-Drive.getAverageDriveVelocity());
     	this.hPID.setSetpoint((this.heading - RobotMap.gyroSPI.getAbsoluteAngle()) * 10);
-		double head = hPID.calculate(RobotMap.gyroSPI.getRate());
+        double head = hPID.calculate(RobotMap.gyroSPI.getRate());
 
     	RobotMap.driveLeftTop.set(ControlMode.PercentOutput, -vel - head);
 		RobotMap.driveRightTop.set(ControlMode.PercentOutput, vel - head);
-		System.out.println("ERROR ANGLE" + this.hPID.getError());
+		System.out.println("LIMELIGHT ANGLE ERROR" + this.hPID.getError());
     }
 
     protected boolean isFinished() {
-			if(this.timeOut) {
-				return isTimedOut();
-			}
-			return Constants.isWithinThreshold(this.hPID.getError(), -0.5, 0.5);
+        return Constants.isWithinThreshold(this.hPID.getError(), -2.5, 2.5) || isTimedOut();
     }
 
     protected void end() {
 		System.out.println(this.getName() + " FINISHED");
+		this.offset = 0.0;
 		Drive.stopMoving();
     }
 

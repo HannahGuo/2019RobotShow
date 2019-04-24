@@ -23,7 +23,7 @@
           },
           "7,1": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -114,7 +114,7 @@
           },
           "7,2": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -275,6 +275,13 @@
                   "_title": "DigitalInput[3]/Value",
                   "Colors/Color when true": "#7CFC00FF",
                   "Colors/Color when false": "#8B0000FF"
+                },
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/DigitalInput[4]/Value",
+                  "_title": "DigitalInput[4]/Value",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
                 }
               ]
             }
@@ -302,7 +309,15 @@
               "_source0": "network_table:///LiveWindow/Drive",
               "_title": "Drive",
               "Layout/Label position": "BOTTOM",
-              "_children": []
+              "_children": [
+                {
+                  "_type": "Subsystem Layout",
+                  "_source0": "network_table:///LiveWindow/Drivetrain",
+                  "_title": "LiveWindow/Drivetrain",
+                  "Layout/Label position": "BOTTOM",
+                  "_children": []
+                }
+              ]
             }
           }
         }
@@ -310,9 +325,9 @@
     }
   ],
   "windowGeometry": {
-    "x": -7.0,
-    "y": 2.0,
-    "width": 1378.0,
-    "height": 733.0
+    "x": -8.0,
+    "y": -8.0,
+    "width": 1382.0,
+    "height": 744.0
   }
 }

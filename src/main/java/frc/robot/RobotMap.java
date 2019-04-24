@@ -38,6 +38,7 @@ public class RobotMap {
     public static final ADXRS453Gyro gyroSPI = new ADXRS453Gyro(); //Counter-clockwise (Left) = negative, clockwise (Right) = positive
 
     private static RobotMap instance;
+	public static Object traumatizedGhost;
     public static RobotMap getInstance() {
         return instance == null ? instance = new RobotMap() : instance;
     }
@@ -113,7 +114,6 @@ public class RobotMap {
         elevatorBot.setInverted(InvertType.FollowMaster);
 
         intakeTop.set(ControlMode.PercentOutput, 0.0);
-
         intakeBot.set(ControlMode.PercentOutput, 0.0);
 
         wristControl.set(ControlMode.MotionMagic, 0.0);
@@ -136,29 +136,12 @@ public class RobotMap {
         wristControl.config_kF(1, 0.2, 10);
     }
 
-    public static void resetSensors() {
-        gyroSPI.reset();
-        driveLeftTop.setSelectedSensorPosition(0);
-        driveRightTop.setSelectedSensorPosition(0);
-        wristControl.setSelectedSensorPosition(0);
-        elevatorTop.setSelectedSensorPosition(0);
+    public static void makePDPWork() {
         pdp.clearStickyFaults();
     }
 
-    public static void getElevatorOutputs() {
+    public static void printElevatorOutputs() {
         System.out.println("Elevator Outputs:" + elevatorTop.getSelectedSensorPosition());
-    }
-
-    public static void printDriveEncoderPositions() {
-        System.out.println("Drive Encoder positions: " + driveLeftTop.getSelectedSensorPosition() + " " + driveRightTop.getSelectedSensorPosition());
-    }
-    
-    public static void printDriveEncoderVelocitiess() {
-        System.out.println("Drive Encoder velocities: " + driveLeftTop.getSelectedSensorVelocity() + " " + driveRightTop.getSelectedSensorVelocity());
-    }
-
-    public static void getDriveCurrents(){
-        System.out.println("Drive currents: " + driveLeftTop.getOutputCurrent() + " " + driveRightTop.getOutputCurrent());
     }
 
     public static boolean isEncoderConnected(TalonSRX talonToCheck){

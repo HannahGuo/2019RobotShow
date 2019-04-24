@@ -16,6 +16,7 @@ import frc.robot.Constants;
 import frc.robot.LimelightVision;
 import frc.robot.OI;
 import frc.robot.ParadoxTimer;
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 public class Elevator extends Subsystem {
@@ -157,8 +158,13 @@ public class Elevator extends Subsystem {
         
         if(OI.getPrimaryStartPressed()) beastToggle = !beastToggle;
 
-        if(beastToggle) elevatorState = ElevatorState.BEAST;
-        else if(elevatorState == ElevatorState.BEAST && !beastToggle) elevatorState = ElevatorState.MANUAL;
+        if(beastToggle) {
+          elevatorState = ElevatorState.BEAST;
+          LimelightVision.blink();
+        } else if(elevatorState == ElevatorState.BEAST && !beastToggle) { 
+          elevatorState = ElevatorState.MANUAL;
+          LimelightVision.turnOn();
+        }
 
         if(elevatorState != ElevatorState.MANUAL) lockWristMode = false;
 
@@ -201,7 +207,7 @@ public class Elevator extends Subsystem {
             elevatorState = ElevatorState.CARGOBALL;
           } 
 
-          if(!OI.getPrimaryRT() && !DriverStation.getInstance().isAutonomous()){
+          if(!OI.getPrimaryRT() && (!DriverStation.getInstance().isAutonomous() && Robot.runAuto)){
             lowerHatch = 0;
             stopIntakeWheels();
           }
@@ -224,9 +230,6 @@ public class Elevator extends Subsystem {
             } else elevatorState = ElevatorState.INTAKE;
           } 
         } // beast mode disable effect ends here
-
-        if(elevatorState == ElevatorState.BEAST) LimelightVision.setBlink(2);
-        else LimelightVision.setBlink(0);
         
         if(elevatorState == ElevatorState.MANUAL) {
           if(isElevatorButtonPressed() && OI.getSecondaryLeftYAxis() >= 0) RobotMap.elevatorTop.set(ControlMode.PercentOutput, 0);
@@ -309,7 +312,8 @@ public class Elevator extends Subsystem {
 
           holdGroundMode = Constants.isWithinThreshold(RobotMap.wristControl.getSelectedSensorPosition(), elevatorState.getClawPosition() - 175, elevatorState.getClawPosition() + 175) && isGroundIntakeMode();
           
-          if(Constants.isWithinThreshold(RobotMap.wristControl.getSelectedSensorPosition(0), elevatorState.getClawPosition() - 200, elevatorState.getClawPosition() + 200) && elevatorState == ElevatorState.HOLDHATCH1) elevatorState = ElevatorState.HOLDHATCH2;
+          if(Constants.isWithinThreshold(RobotMap.wristControl.getSelectedSensorPosition(0), elevatorState.getClawPosition() - 200, elevatorState.getClawPosition() + 200) 
+              && elevatorState == ElevatorState.HOLDHATCH1) elevatorState = ElevatorState.HOLDHATCH2;
 
           if(isForbiddenOrangeIn() && !ballIntakeTimer.isEnabled() && isIntakingOrange()) ballIntakeTimer.enableTimer(System.currentTimeMillis());
 
@@ -340,7 +344,6 @@ public class Elevator extends Subsystem {
           }
 
           if(elevatorState != ElevatorState.INTAKEHUMANHATCH2 && elevatorState != ElevatorState.INTAKEHUMANHATCH1) humanHatchMode = false;
-
           RobotMap.traumatizedGhosts.set(elevatorState.getExtendGhosts());
 
           if(elevatorState != ElevatorState.INTAKEHUMANHATCH2 || (humanHatchIntakeTimer.hasTimeHasPassed(800, System.currentTimeMillis()) && elevatorState == ElevatorState.INTAKEHUMANHATCH2)) {
@@ -359,17 +362,12 @@ public class Elevator extends Subsystem {
             RobotMap.wristControl.configMotionAcceleration(CLAW_ACCEL);
             RobotMap.wristControl.set(ControlMode.MotionMagic, elevatorState.getClawPosition() - lowerHatch);
           } else {
-            if(elevatorState == ElevatorState.INTAKE) {
-              RobotMap.wristControl.set(ControlMode.Current, 0.85);
-            } else {
-              RobotMap.wristControl.set(ControlMode.Current, 2.00);
-            }
+            if(elevatorState == ElevatorState.INTAKE) RobotMap.wristControl.set(ControlMode.Current, 0.85);
+            else RobotMap.wristControl.set(ControlMode.Current, 2.00);
           }
         }  
 
         lastState = elevatorState;
-        // System.out.println(elevatorState.name() + " WRIST ENC " + RobotMap.wristControl.getSelectedSensorPosition(0) + " " + RobotMap.elevatorTop.getSelectedSensorPosition(0) + " " + elevatorState.getClawPosition() + " " + wristZeroed + " " + elevatorZeroed + " " + OI.getSecondaryBack());
-        // System.out.println("WRIST BUTTON " + RobotMap.zeroThyWrist.get());
 
         SmartDashboard.putNumber("Elevator Height", RobotMap.elevatorTop.getSelectedSensorPosition());
         SmartDashboard.putString("Elevator State", elevatorState.name());
@@ -478,8 +476,6 @@ public class Elevator extends Subsystem {
   }
 
   private static void updateLastIntakeItem(){
-    if(isIntaking()) {
-      lastIntakeItem = isIntakingOrange() ? "BALL" : "HATCH";
-    } 
+    if(isIntaking()) lastIntakeItem = isIntakingOrange() ? "BALL" : "HATCH";
   }
 }
