@@ -23,12 +23,12 @@ public class LimelightVision {
         table = NetworkTableInstance.getDefault().getTable("limelight");
     } 
 
-    public void updateVision(){
+    public static void updateVision(){
         table = NetworkTableInstance.getDefault().getTable("limelight");
         SmartDashboard.putNumber("Horizontal Offset", getHorizontalOffset());
-        SmartDashboard.putNumber("Vertical Offset", getVerticalOffset());
-        SmartDashboard.putNumber("Skew", getSkew());
-        SmartDashboard.putNumber("Distance", getDistance());
+        // SmartDashboard.putNumber("Vertical Offset", getVerticalOffset());
+        // SmartDashboard.putNumber("Skew", getSkew());
+        SmartDashboard.putNumber("Target Area", getTargetArea());
         SmartDashboard.putBoolean("Has targets?", isTargetVisible());
     }
 
@@ -54,22 +54,23 @@ public class LimelightVision {
         return table.getEntry("ta").getDouble(0.0);
     }  
 
-    public static void setCamMode(int camMode){
-        // 0 = Vision Processing, 1 = Drive Camera
-        NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(camMode);
+    public static void setDriveMode(){
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(1);
     }
 
-    public static double getDistance(){
-        double a1 = 0.0;
-        double a2 = getVerticalOffset();
-        double h1 = 41.5; //inches
-        double h2 = 29.0; //inches
-        
-        return (h2 - h1) / Math.tan(a1 + a2);
+    public static void setVisionProcessingMode(){
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(0);
     }
 
-    public static void setBlink(int blink) {
-        // 1 --> Force off, 2 --> Force, 3 --> Force on
-        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(blink);
+    public static void turnOff(){
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+    }
+
+    public static void blink(){
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
+    }
+
+    public static void turnOn(){
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
     }
 }

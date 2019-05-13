@@ -1,10 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -15,16 +8,15 @@ import frc.robot.Constants;
 import frc.robot.LimelightVision;
 import frc.robot.OI;
 import frc.robot.ParadoxTimer;
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.SynchronousPID;
 
 public class Drive extends Subsystem {
   private static Drive instance;
-  private LimelightVision limelightVision = LimelightVision.getInstance();
-  private ParadoxTimer visionToggle = new ParadoxTimer();
-  private ParadoxTimer openLoopToggle = new ParadoxTimer();
   private static boolean openLoop = false;
-  private boolean fnatic = false; // open loop toggle thing
+  private ParadoxTimer visionToggle = new ParadoxTimer();
+
   public static Drive getInstance() {
     return instance == null ? instance = new Drive() : instance;
   }
@@ -42,67 +34,67 @@ public class Drive extends Subsystem {
 
       protected void initialize() {
         this.hPID.reset();
-				this.hPID.setPID(0.01, 0.0002, 0);
+        this.hPID.setPID(Constants.angPID);
         System.out.println("Starting " + this.getName());
+        LimelightVision.setDriveMode();
       }
 
       protected void execute() {
-        double straight = OI.getPrimaryLeftYAxis(), multiplier = OI.getPrimaryLB() ? 0.3 : 1.0, steering, left, right;
-        
-        if(OI.isPrimaryDPadPressed()) {
-          openLoop = true;
-        }
+        RobotMap.gyroSPI.reset();
 
+        double straight = OI.getPrimaryLeftYAxis(), steering, left, right;
+        
         if(OI.getPrimaryRB()) {
-          limelightVision.setCamMode(0);
+          LimelightVision.setVisionProcessingMode();
+          setLowGear();
           if(!visionToggle.isEnabled()) {
             visionToggle.enableTimer(System.currentTimeMillis());
           }
         } else {
-          limelightVision.setCamMode(1);
+          LimelightVision.setDriveMode();
           visionToggle.disableTimer();
         }
 
-        if(OI.getPrimaryRB() && limelightVision.isTargetVisible() && limelightVision.getHorizontalOffset() != 0.0 && visionToggle.hasTimeHasPassed(800, System.currentTimeMillis())){
-          limelightVision.updateVision();
-          steering = limelightVision.getHorizontalOffset() * Constants.limelightP;  
-          left = multiplier * (-straight - steering);
-          right = multiplier * (straight - steering);
+        if(OI.isPrimaryDPadPressed() || OI.getPrimaryX()) {
+          openLoop = true;
+        }
+        
+        if(OI.getPrimaryRB() && LimelightVision.isTargetVisible() &&
+          visionToggle.hasTimeHasPassed(700, System.currentTimeMillis())) {
+          LimelightVision.updateVision();
+			    this.hPID.setSetpoint((LimelightVision.getHorizontalOffset() + 0.7) * 10);
+		    	double head = hPID.calculate(RobotMap.gyroSPI.getRate());
+          left = -head;
+          right = -head;
+  
         } else if(openLoop) {
-          steering = Math.pow(OI.getPrimaryRightXAxis(), 3);
+          steering = OI.getPrimaryRightXAxis();
 
           if(-0.1 < straight && 0.1 > straight) straight = 0.0;
           if(-0.1 < steering && 0.1 > steering) steering = 0.0;
 
-          left = multiplier * (-straight - steering);
-          right = multiplier * (straight - steering);
-
-          if(!OI.isPrimaryDPadPressed()) {
-            if(!openLoopToggle.isEnabled()) openLoopToggle.enableTimer(System.currentTimeMillis());
-          }
-
-          if(OI.isPrimaryDPadPressed() && openLoopToggle.isEnabled() && openLoopToggle.hasTimeHasPassed(1000, System.currentTimeMillis())) {
-            openLoop = false;
-            openLoopToggle.disableTimer();
-          }
+          left = -straight - steering;
+          right = straight - steering;  
         } else {
-          this.hPID.setSetpoint(Math.pow(OI.getPrimaryRightXAxis(), 3) * 400);
+          this.hPID.setSetpoint(OI.getPrimaryRightXAxis() * 400);
           steering = this.hPID.calculate(RobotMap.gyroSPI.getRate());
           
           if(-0.1 < straight && 0.1 > straight) straight = 0.0;
           if(-0.1 < steering && 0.1 > steering) steering = 0.0;
 
-          left = multiplier * (-straight - steering);
-          right = multiplier * (straight - steering);
+          left = -straight - steering;
+          right = straight - steering;
+  
         }
         
-        SmartDashboard.putNumber("STEERING", steering);
-        SmartDashboard.putNumber("GYRO RATE", RobotMap.gyroSPI.getRate());
+        // RobotMap.printDriveEncoderPositions();
+        // RobotMap.printDriveEncoderVelocitiess();
+        
         SmartDashboard.putBoolean("IS OPEN LOOP?", openLoop);
         driveLR(left, right);
 
-        if(OI.getPrimaryB()) RobotMap.driveShifter.set(true); // low gear
-        else if(OI.getPrimaryA()) RobotMap.driveShifter.set(false); // high gear
+        if(OI.getPrimaryB()) setLowGear();
+        else if(OI.getPrimaryA()) setHighGear();
       }
 
       protected void end(){
@@ -126,9 +118,37 @@ public class Drive extends Subsystem {
     RobotMap.driveRightTop.set(ControlMode.PercentOutput, right);
   }
 
-  public void resetDriveEncoders(){
+  public static void resetDriveEncoders(){
     RobotMap.driveLeftTop.setSelectedSensorPosition(0);
     RobotMap.driveRightTop.setSelectedSensorPosition(0);
+  }
+
+  public static void setHighGear(){
+    RobotMap.driveShifter.set(false); // comp
+  }
+
+  public static void setLowGear(){
+    RobotMap.driveShifter.set(true); // comp 
+  }
+
+  public static double getAverageDrivePosition(){
+    return (RobotMap.driveLeftTop.getSelectedSensorPosition(0) + RobotMap.driveRightTop.getSelectedSensorPosition(0)) / 2;
+  }
+
+  public static double getAverageDriveVelocity(){
+    return (RobotMap.driveLeftTop.getSelectedSensorVelocity(0) + RobotMap.driveRightTop.getSelectedSensorVelocity(0)) / 2;
+  }
+
+  public static void printDriveEncoderPositions() {
+    System.out.println("Drive Encoder positions: " + RobotMap.driveLeftTop.getSelectedSensorPosition() + " " + RobotMap.driveRightTop.getSelectedSensorPosition());
+  }
+
+  public static void printDriveEncoderVelocitiess() {
+    System.out.println("Drive Encoder velocities: " + RobotMap.driveLeftTop.getSelectedSensorVelocity() + " " + RobotMap.driveRightTop.getSelectedSensorVelocity());
+  }
+
+  public static void printDriveCurrents(){
+    System.out.println("Drive currents: " + RobotMap.driveLeftTop.getOutputCurrent() + " " + RobotMap.driveRightTop.getOutputCurrent());
   }
   
   public static void stopMoving() {

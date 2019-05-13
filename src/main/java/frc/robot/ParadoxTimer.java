@@ -2,6 +2,7 @@ package frc.robot;
 
 /**
  * A class for timers used in the robot code.
+ * @author Hannah
  */
 public class ParadoxTimer {
     private boolean isTiming = false;
