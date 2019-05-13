@@ -8,14 +8,15 @@ import frc.robot.Constants;
 import frc.robot.LimelightVision;
 import frc.robot.OI;
 import frc.robot.ParadoxTimer;
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.SynchronousPID;
 
 public class Drive extends Subsystem {
   private static Drive instance;
-  private ParadoxTimer visionToggle = new ParadoxTimer();
-  private ParadoxTimer openLoopToggle = new ParadoxTimer();
   private static boolean openLoop = false;
+  private ParadoxTimer visionToggle = new ParadoxTimer();
+
   public static Drive getInstance() {
     return instance == null ? instance = new Drive() : instance;
   }
@@ -35,61 +36,65 @@ public class Drive extends Subsystem {
         this.hPID.reset();
         this.hPID.setPID(Constants.angPID);
         System.out.println("Starting " + this.getName());
+        LimelightVision.setDriveMode();
       }
 
       protected void execute() {
-        double straight = OI.getPrimaryLeftYAxis(), multiplier = OI.getPrimaryLB() ? 0.3 : 1.0, steering, left, right;
-        
-        if(OI.isPrimaryDPadPressed()) {
-          openLoop = true;
-        }
+        RobotMap.gyroSPI.reset();
 
+        double straight = OI.getPrimaryLeftYAxis(), steering, left, right;
+        
         if(OI.getPrimaryRB()) {
           LimelightVision.setVisionProcessingMode();
+          setLowGear();
           if(!visionToggle.isEnabled()) {
             visionToggle.enableTimer(System.currentTimeMillis());
           }
         } else {
-          LimelightVision.setVisionProcessingMode();
+          LimelightVision.setDriveMode();
           visionToggle.disableTimer();
         }
 
-        if(OI.getPrimaryRB() && LimelightVision.isTargetVisible() && LimelightVision.getHorizontalOffset() != 0.0 && visionToggle.hasTimeHasPassed(800, System.currentTimeMillis())){
+        if(OI.isPrimaryDPadPressed() || OI.getPrimaryX()) {
+          openLoop = true;
+        }
+        
+        if(OI.getPrimaryRB() && LimelightVision.isTargetVisible() &&
+          visionToggle.hasTimeHasPassed(700, System.currentTimeMillis())) {
           LimelightVision.updateVision();
-          steering = LimelightVision.getHorizontalOffset() * Constants.limelightP;  
+			    this.hPID.setSetpoint((LimelightVision.getHorizontalOffset() + 0.7) * 10);
+		    	double head = hPID.calculate(RobotMap.gyroSPI.getRate());
+          left = -head;
+          right = -head;
+  
         } else if(openLoop) {
-          steering = Math.pow(OI.getPrimaryRightXAxis(), 3);
+          steering = OI.getPrimaryRightXAxis();
 
           if(-0.1 < straight && 0.1 > straight) straight = 0.0;
           if(-0.1 < steering && 0.1 > steering) steering = 0.0;
 
-          if(!OI.isPrimaryDPadPressed()) {
-            if(!openLoopToggle.isEnabled()) openLoopToggle.enableTimer(System.currentTimeMillis());
-          }
-
-          if(OI.isPrimaryDPadPressed() && openLoopToggle.isEnabled() && openLoopToggle.hasTimeHasPassed(1000, System.currentTimeMillis())) {
-            openLoop = false;
-            openLoopToggle.disableTimer();
-          }
+          left = -straight - steering;
+          right = straight - steering;  
         } else {
-          this.hPID.setSetpoint(Math.pow(OI.getPrimaryRightXAxis(), 3) * 10);
+          this.hPID.setSetpoint(OI.getPrimaryRightXAxis() * 400);
           steering = this.hPID.calculate(RobotMap.gyroSPI.getRate());
           
           if(-0.1 < straight && 0.1 > straight) straight = 0.0;
           if(-0.1 < steering && 0.1 > steering) steering = 0.0;
+
+          left = -straight - steering;
+          right = straight - steering;
+  
         }
         
-        left = multiplier * (-straight - steering);
-        right = multiplier * (straight - steering);
-
         // RobotMap.printDriveEncoderPositions();
         // RobotMap.printDriveEncoderVelocitiess();
         
         SmartDashboard.putBoolean("IS OPEN LOOP?", openLoop);
         driveLR(left, right);
 
-        if(OI.getPrimaryB()) setHighGear();
-        else if(OI.getPrimaryA()) setLowGear();
+        if(OI.getPrimaryB()) setLowGear();
+        else if(OI.getPrimaryA()) setHighGear();
       }
 
       protected void end(){
@@ -119,11 +124,11 @@ public class Drive extends Subsystem {
   }
 
   public static void setHighGear(){
-    RobotMap.driveShifter.set(true);
+    RobotMap.driveShifter.set(false); // comp
   }
 
   public static void setLowGear(){
-    RobotMap.driveShifter.set(false);
+    RobotMap.driveShifter.set(true); // comp 
   }
 
   public static double getAverageDrivePosition(){

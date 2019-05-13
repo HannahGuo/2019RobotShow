@@ -13,7 +13,7 @@ public class Constants {
 
     public static final double carrageInchesPerEncoderRev = 2.699;
 
-    public static final double driveEncoderUnitsPerInch = 1053;
+    public static final double driveEncoderUnitsPerInch = 1000;
     public static final int maxFtPerSecond = 5;
     public static final double maxMPerSecond = feetToMeters(maxFtPerSecond);
 

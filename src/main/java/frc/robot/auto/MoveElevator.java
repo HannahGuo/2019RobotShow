@@ -9,6 +9,7 @@ package frc.robot.auto;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Constants;
+import frc.robot.LimelightVision;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Elevator.ElevatorState;
@@ -28,6 +29,7 @@ public class MoveElevator extends Command {
   @Override
   protected void initialize() {
     Elevator.elevatorState = this.elevatorState;
+    LimelightVision.setVisionProcessingMode();
     setTimeout(0.9);
   }
 
@@ -49,6 +51,7 @@ public class MoveElevator extends Command {
   @Override
   protected void end() {
     Elevator.stopIntakeWheels();
+    Elevator.lowerHatch = 0;
     this.score = false;
     System.out.println(this.getName() + " FINISHED");
   }

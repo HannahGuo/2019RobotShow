@@ -79,12 +79,13 @@ public class DriveStraight extends Command {
     }
 
     protected boolean isFinished() {
-		if(lowGear) return isTimedOut();
+		if(this.lowGear) return isTimedOut();
 		return (Constants.isWithinThreshold(this.vPID.getError(), -400, 400)) && Constants.isWithinThreshold(-Drive.getAverageDriveVelocity(), -1100, 1100);
 	}
 
     protected void end() {
 		System.out.println(this.getName() + " FINISHED");
+		this.lowGear = false;
 		Drive.stopMoving();
     }
 

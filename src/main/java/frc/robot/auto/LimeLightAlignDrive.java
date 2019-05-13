@@ -40,15 +40,14 @@ public class LimeLightAlignDrive extends Command {
     this.hPID.setPID(Constants.angPID);
     Drive.setLowGear();
     Drive.resetDriveEncoders();
-    LimelightVision.updateVision();
     LimelightVision.setVisionProcessingMode();
+    LimelightVision.updateVision();
     this.distance = ((2.8499 * Math.pow(LimelightVision.getTargetArea(), 2)) - (26.662 * LimelightVision.getTargetArea()) + 61.871) * Constants.driveEncoderUnitsPerInch;
   }
 
   @Override
   protected void execute() {
     LimelightVision.updateVision();
-    LimelightVision.setVisionProcessingMode();
     if(LimelightVision.isTargetVisible()) {
       this.vPID.setSetpoint(Drive.getAverageDrivePosition() - this.distance);
     	double vel = vPID.calculate(-Drive.getAverageDriveVelocity());

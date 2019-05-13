@@ -15,7 +15,7 @@ public class TurnToAngle extends Command {
 	private boolean timeOut = false;
 	
     public TurnToAngle(double head) {
-			this.timeOut = false;
+		this.timeOut = false;
 		this.drive = Drive.getInstance();
 		this.vPID = new SynchronousPID();
     	this.vPID.setOutputRange(-1.0, 1.0);
@@ -44,7 +44,7 @@ public class TurnToAngle extends Command {
     	this.hPID.reset();
 		this.hPID.setPID(Constants.angPID);
 		Drive.resetDriveEncoders();
-		RobotMap.driveShifter.set(false);
+		Drive.setLowGear();
 		if(this.timeOut) setTimeout(0.5);
     }
    

@@ -8,9 +8,9 @@ import frc.robot.subsystems.Elevator.ElevatorState;
 public class RightFarRocket extends CommandGroup {
   public RightFarRocket() {
     Elevator.elevatorState = ElevatorState.ZERO;
-    addSequential(new DriveStraight(-125000));
+    addSequential(new DriveStraight(-144600));
     addSequential(new TurnToAngle(30));
-    addSequential(new DriveStraight(-205000));
+    addSequential(new DriveStraight(-145000));
     addSequential(new TurnToAngle(-55));
     addSequential(new DriveStraight(-12000));
     addSequential(new MoveElevator(ElevatorState.HATCH1));
@@ -20,6 +20,7 @@ public class RightFarRocket extends CommandGroup {
     addSequential(new TurnToAngle(50));
     addSequential(new DriveStraight(120000));
     addSequential(new TurnToAngle(-30, true));
+    addSequential(new ChangeLimelightState(true));
     addSequential(new DriveStraight(50000));
   }
 }

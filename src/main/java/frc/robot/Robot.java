@@ -24,6 +24,10 @@ public class Robot extends TimedRobot {
   Command autoCommand;
   public static boolean runAuto = false;
   SendableChooser<Integer> autoChooser;
+  public static SendableChooser<Elevator.ElevatorState> elevatorScorePos;
+  private boolean hadItem = false;
+  private boolean disableAutos = false;
+  public static boolean finalClimbMode = false;
 
   @Override
   public void robotInit() {
@@ -33,7 +37,15 @@ public class Robot extends TimedRobot {
     autoChooser.addOption("LEFT FAR ROCKET", 0);
     autoChooser.addOption("RIGHT FAR ROCKET", 1);
     SmartDashboard.putData("Auto Mode Chooser", autoChooser);
+
+
+    elevatorScorePos = new SendableChooser<Elevator.ElevatorState>();
+    elevatorScorePos.setDefaultOption("LEVEL 1", ElevatorState.HATCH1);
+    elevatorScorePos.addOption("LEVEL 2", ElevatorState.HATCH2);
+    elevatorScorePos.addOption("LEVEL 3", ElevatorState.HATCH3);
+    SmartDashboard.putData("Elevator Auto Score Height", elevatorScorePos);
     runAuto = false;
+    Scheduler.getInstance().removeAll();
   }
 
   @Override
@@ -41,7 +53,7 @@ public class Robot extends TimedRobot {
     LimelightVision.updateVision();
     SmartDashboard.putNumber("GYRO ANGLE", RobotMap.gyroSPI.getAbsoluteAngle());
     SmartDashboard.putNumber("GYRO RATE", RobotMap.gyroSPI.getRate());
-    SmartDashboard.putString("DRIVE GEAR", RobotMap.driveShifter.get() ? "HIGH" : "LOW");
+    SmartDashboard.putString("DRIVE GEAR", !RobotMap.driveShifter.get() ? "HIGH" : "LOW"); //comp
   }
 
   @Override
@@ -49,8 +61,8 @@ public class Robot extends TimedRobot {
     LimelightVision.turnOn();
     RobotMap.makePDPWork();
     Elevator.elevatorState = ElevatorState.ZERO;
-    if(autoChooser.getSelected() != 2) runAuto = true;
-    if(runAuto) {
+    System.out.println(autoChooser.getSelected());
+    if(autoChooser.getSelected() != 2 && autoChooser.getSelected() != null) {
       autoCommand = autonomousCommandsOptionRocket[autoChooser.getSelected()];
       if(autoCommand != null) autoCommand.start();
     }
@@ -58,7 +70,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-    if(!Robot.runAuto) Scheduler.getInstance().run();
+    if(OI.getPrimaryX()) Scheduler.getInstance().removeAll();
+    Scheduler.getInstance().run();
   }
 
   @Override
@@ -69,21 +82,28 @@ public class Robot extends TimedRobot {
     Elevator.stopMoving();
     LimelightVision.turnOff();
     RobotMap.makePDPWork();
+    disableAutos = false;
+    finalClimbMode = false;
   }
 
   @Override
   public void teleopInit(){
-    if(runAuto) Scheduler.getInstance().removeAll();
-    else Elevator.elevatorState = ElevatorState.MANUAL;
+    if(this.runAuto) Scheduler.getInstance().removeAll();
+    
+    Elevator.elevatorState = ElevatorState.MANUAL;
 
     c.setClosedLoopControl(true);
     LimelightVision.turnOn();
+    LimelightVision.setDriveMode();
     Drive.stopMoving();
   }
 
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
+
+    if(Elevator.elevatorState == ElevatorState.HOLDHATCH1 && Elevator.isHatchIn()) LimelightVision.blink();
+    else if(Elevator.elevatorState == ElevatorState.HOLDHATCH2) LimelightVision.turnOn();
   }
   
   @Override

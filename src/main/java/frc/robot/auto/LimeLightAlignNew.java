@@ -42,19 +42,23 @@ public class LimeLightAlignNew extends Command {
 		this.hPID.setPID(Constants.angPID);
 		Drive.resetDriveEncoders();
 		this.heading = LimelightVision.getHorizontalOffset() + this.offset;
-		setTimeout(0.5);
+		LimelightVision.setVisionProcessingMode();
+		setTimeout(1.0);
     }
    
     protected void execute() {
 		//OI.getPrimaryLeftXAxis() * 3000
-    	this.vPID.setSetpoint((Drive.getAverageDrivePosition()));
-    	double vel = vPID.calculate(-Drive.getAverageDriveVelocity());
-    	this.hPID.setSetpoint((this.heading - RobotMap.gyroSPI.getAbsoluteAngle()) * 10);
-        double head = hPID.calculate(RobotMap.gyroSPI.getRate());
+		LimelightVision.updateVision();
+		if(LimelightVision.isTargetVisible()) {
+			this.vPID.setSetpoint((Drive.getAverageDrivePosition()));
+			double vel = vPID.calculate(-Drive.getAverageDriveVelocity());
+			this.hPID.setSetpoint((this.heading - RobotMap.gyroSPI.getAbsoluteAngle()) * 10);
+			double head = hPID.calculate(RobotMap.gyroSPI.getRate());
 
-    	RobotMap.driveLeftTop.set(ControlMode.PercentOutput, -vel - head);
-		RobotMap.driveRightTop.set(ControlMode.PercentOutput, vel - head);
-		System.out.println("LIMELIGHT ANGLE ERROR" + this.hPID.getError());
+			RobotMap.driveLeftTop.set(ControlMode.PercentOutput, -vel - head);
+			RobotMap.driveRightTop.set(ControlMode.PercentOutput, vel - head);
+			System.out.println("LIMELIGHT ANGLE ERROR" + this.hPID.getError());
+		}
     }
 
     protected boolean isFinished() {
