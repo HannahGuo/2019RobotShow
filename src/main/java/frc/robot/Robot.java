@@ -88,9 +88,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit(){
-    if(this.runAuto) Scheduler.getInstance().removeAll();
-    
-    Elevator.elevatorState = ElevatorState.MANUAL;
+    // if(this.runAuto) Scheduler.getInstance().removeAll();
+    Scheduler.getInstance().removeAll();
+    // Elevator.elevatorState = ElevatorState.MANUAL;
 
     c.setClosedLoopControl(true);
     LimelightVision.turnOn();

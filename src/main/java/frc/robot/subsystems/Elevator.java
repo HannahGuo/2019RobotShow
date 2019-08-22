@@ -156,7 +156,7 @@ public class Elevator extends Subsystem {
         // RIGHT TRIGGER = HATCH OUTTAKE ^^
         // RIGHT BUMPER = VISION MODE FOR DRIVE
         // LEFT BUMPER = SLOW DRIVE
-        // PRIMARY A + Y = DRIVE SHIFTERS
+        // PRIMARY A + B = DRIVE SHIFTERS
         // DPAD? --> BEAST MODE
         
         if(OI.getPrimaryStartPressed()) beastToggle = !beastToggle;
@@ -353,7 +353,7 @@ public class Elevator extends Subsystem {
           }
 
           if(elevatorState != ElevatorState.INTAKEHUMANHATCH2 && elevatorState != ElevatorState.INTAKEHUMANHATCH1) humanHatchMode = false;
-          RobotMap.traumatizedGhosts.set(elevatorState.getExtendGhosts());
+          RobotMap.traumatizedGhosts.set(OI.getPrimaryRT() && isHatchHeightMode() ? false : elevatorState.getExtendGhosts());
 
           if(elevatorState != ElevatorState.INTAKEHUMANHATCH2 || (humanHatchIntakeTimer.hasTimeHasPassed(800, System.currentTimeMillis()) && elevatorState == ElevatorState.INTAKEHUMANHATCH2)) {
             RobotMap.elevatorTop.configMotionCruiseVelocity(elevatorState.getVel(), 10);
