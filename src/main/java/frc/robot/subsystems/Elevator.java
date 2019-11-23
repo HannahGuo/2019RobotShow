@@ -68,10 +68,10 @@ public class Elevator extends Subsystem {
     HOLDHATCH1(-3500, 10000, 17000, 200, true),
     HOLDHATCH2(-3500, 10000, 17000, 920, true),
 
-    INTAKE(-5900, 10000, 22000, 5240, false),
-    INTAKEBALLGROUND(-5800, 10000, 22000, 5240, false),
-    INTAKEBALLUP(-10075, 10000, 22000, 5240, false),
-    INTAKEHATCHGROUND(-5800, 10000, 22000, 5240, false),
+    INTAKE(-5900, 10000, 22000, 5330, false),
+    INTAKEBALLGROUND(-5800, 10000, 22000, 5330, false),
+    INTAKEBALLUP(-10075, 10000, 22000, 5330, false),
+    INTAKEHATCHGROUND(-6000, 10000, 22000, 5330, false),
 
     INTAKEHUMANHATCH1(-4925, 10000, 15000, 4185, false),
     INTAKEHUMANHATCH2(-10850, 10000, 15000, 4185, true),
@@ -371,12 +371,12 @@ public class Elevator extends Subsystem {
             RobotMap.wristControl.configMotionAcceleration(CLAW_ACCEL);
             RobotMap.wristControl.set(ControlMode.MotionMagic, elevatorState.getClawPosition() - lowerHatch);
           } else {
-            if(elevatorState == ElevatorState.INTAKE) RobotMap.wristControl.set(ControlMode.Current, 0.85);
-            else RobotMap.wristControl.set(ControlMode.Current, 2.00);
+            if(elevatorState == ElevatorState.INTAKE) RobotMap.wristControl.set(ControlMode.Current, 0.95);
+            else RobotMap.wristControl.set(ControlMode.Current, 2.20);
           }
 
           if(elevatorState == ElevatorState.CLIMBMODE1 && Constants.isWithinThreshold(RobotMap.elevatorTop.getSelectedSensorPosition(), elevatorState.getElevatorHeight() - 200, elevatorState.getElevatorHeight() + 200) && 
-            Constants.isWithinThreshold(RobotMap.wristControl.getSelectedSensorPosition(), elevatorState.getClawPosition() - 100, elevatorState.getClawPosition() + 100) ) {
+            Constants.isWithinThreshold(RobotMap.wristControl.getSelectedSensorPosition(), elevatorState.getClawPosition() - 200, elevatorState.getClawPosition() + 200) ) {
             elevatorState = ElevatorState.CLIMBMODE2;
           };
         }  

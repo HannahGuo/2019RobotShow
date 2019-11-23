@@ -15,6 +15,7 @@ import frc.robot.SynchronousPID;
 public class Drive extends Subsystem {
   private static Drive instance;
   private static boolean openLoop = false;
+  private boolean prevOpenState = false;
   private ParadoxTimer visionToggle = new ParadoxTimer();
 
   public static Drive getInstance() {
@@ -55,9 +56,9 @@ public class Drive extends Subsystem {
           visionToggle.disableTimer();
         }
 
-        if(OI.isPrimaryDPadPressed() || OI.getPrimaryX()) {
-          openLoop = true;
-        }
+        // if(OI.isPrimaryDPadPressed() || OI.getPrimaryLB()) {
+          // openLoop = true;
+        // }
         
         if(OI.getPrimaryRB() && LimelightVision.isTargetVisible() &&
           visionToggle.hasTimeHasPassed(700, System.currentTimeMillis())) {
@@ -68,7 +69,7 @@ public class Drive extends Subsystem {
           right = -head;
   
         } else if(openLoop) {
-          steering = OI.getPrimaryRightXAxis();
+          steering = OI.getPrimaryRightXAxis() * 0.8;
 
           if(-0.1 < straight && 0.1 > straight) straight = 0.0;
           if(-0.1 < steering && 0.1 > steering) steering = 0.0;
@@ -95,6 +96,11 @@ public class Drive extends Subsystem {
 
         if(OI.getPrimaryB()) setLowGear();
         else if(OI.getPrimaryA()) setHighGear();
+
+        if(!prevOpenState && OI.getPrimaryLB())
+            openLoop = !openLoop;
+
+        prevOpenState = OI.getPrimaryLB();
       }
 
       protected void end(){

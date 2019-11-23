@@ -22,7 +22,7 @@ public class Constants {
     public static final double trackWidthM = inchesToMeters(trackWidthInches);
     
     public static final double wheelDiameterIn = 6.2;
-    public static final double feetPerEncoderRev = 0.0;
+    public static final double feetPerEncoderRev = 1.0 / (driveEncoderUnitsPerInch * 12.0 / 4096.0);
     public static final double wheelDiameterM = inchesToMeters(wheelDiameterIn);
 
     public static double degToTicks(double degrees) {
